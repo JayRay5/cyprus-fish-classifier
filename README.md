@@ -16,6 +16,10 @@ poetry env use $(which python)
 
 poetry install # install libs in the venv
 ```
+Install git hooks
+```bash
+poetry run pre-commit install
+```
 Create the .env file for the secret variables
 ```bash
 touch .env
