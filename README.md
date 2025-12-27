@@ -1,6 +1,22 @@
-# reconnaissance_poisson_chypre
-Ce projet personnel est un programme de reconaissance des poissons vivants aux alentours de l'île de Chypre.
+# Cyprus Fish Recognition App
 
-train: créer en augmentant 3x les images par rotation random (numero 31 à 60)
-validation: image original (30 à 60)
-test: image original (0 à 30)
+
+## Installation & Setup
+1- Install dependencies
+```bash
+conda create -n cyprus-fish-env python=3.11.5
+conda activate cyprus-fish-env
+```
+Install poetry and libs
+```bash
+pip install poetry
+
+poetry config virtualenvs.in-project true --local # virtual env in the project
+poetry env use $(which python)
+
+poetry install # install libs in the venv
+```
+Create the .env file for the secret variables
+```bash
+touch .env
+```
