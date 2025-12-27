@@ -1,0 +1,1 @@
+# Script to upload the splited dataset to the hub

@@ -1,0 +1,28 @@
+[project]
+name = "cyprus-fish"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Rayane Bencharef"}
+]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+packages = [
+    { include = "cyprus_fish", from = "src" }
+]
+[dependency-groups]
+dev = [
+    "ruff (>=0.14.10,<0.15.0)",
+    "bandit (>=1.9.2,<2.0.0)",
+    "pytest (>=9.0.2,<10.0.0)",
+    "pre-commit (>=4.5.1,<5.0.0)"
+]
