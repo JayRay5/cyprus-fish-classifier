@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Env
+.env
+.venv/
+
+# Heavy files
+data/
+artifacts/*.pt  
+artifacts/*.pth
+!artifacts/*.onnx # Only accept lightweights files
+wandb/          # Logs Weights & Biases
