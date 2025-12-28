@@ -1,6 +1,14 @@
 # 🐠 Cyprus Fish Recognition App
 
 
+## Stack & Tech
+- Poetry (lib and dependencies management)
+- Hydra
+- Ruff (format check)
+- Bandit (Security check)
+- Pytest (Unit Test)
+
+  
 ## Installation & Setup
 1- Install dependencies
 ```bash
