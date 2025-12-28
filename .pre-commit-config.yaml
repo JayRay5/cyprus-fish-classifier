@@ -1,0 +1,36 @@
+# .pre-commit-config.yaml
+repos:
+  # Check for security error
+  - repo: local
+    hooks:
+      - id: bandit
+        name: Bandit Security Check
+        entry: bandit -r src scripts -ll -ii
+        types: [python]
+        # Arguments explanation:
+        # -r  : Recursive (scan all files in the folder)
+        # -ll : Log Level (only report Medium and High severity issues, ignore Low)
+        # -ii : Confidence (only report Medium and High confidence, avoid false positives)
+        # src : The specific folder to scan (avoids scanning tests/ which usually trigger false alarms)
+        language: system
+        pass_filenames: false
+
+  # Check code quality, error and format at each commit using ruff
+      - id: ruff # ruff check 
+        name: Ruff Quality Check
+        entry: ruff check
+        types: [python]
+        language: system
+      - id: ruff-format # ruff format 
+        name: Ruff Format
+        entry: ruff format 
+        types: [python]
+        language: system
+
+  # Start the pytest 
+      - id: pytest-check
+        name: Run Project Tests
+        entry: pytest -v
+        language: system    
+        pass_filenames: false 
+        stages: [push]        
