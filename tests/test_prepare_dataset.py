@@ -21,7 +21,7 @@ def test_split_data_ratio(tmp_path):
 
     # Create temporary fake folders
     raw_dir = Path(cfg.prepare_data.raw_path)
-    processed_dir = Path(cfg.data.processed_path)
+    processed_dir = Path(cfg.prepare_data.processed_path)
 
     # Create fake images
     class_dir = raw_dir / "fish_a"
@@ -30,7 +30,7 @@ def test_split_data_ratio(tmp_path):
     for i in range(10):
         (class_dir / f"img_{i}.jpg").touch()  # Create an empty file
 
-    split_data(cfg.data)
+    split_data(cfg.prepare_data)
 
     # 3. ASSERTIONS
 
