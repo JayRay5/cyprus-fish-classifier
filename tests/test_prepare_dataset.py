@@ -9,7 +9,7 @@ def test_split_data_ratio(tmp_path):
     """
     cfg = OmegaConf.create(
         {
-            "data": {
+            "prepare_data": {
                 "raw_path": str(tmp_path / "raw"),
                 "processed_path": str(tmp_path / "processed"),
                 "split_ratio": [0.8, 0.2],
@@ -20,7 +20,7 @@ def test_split_data_ratio(tmp_path):
     )
 
     # Create temporary fake folders
-    raw_dir = Path(cfg.data.raw_path)
+    raw_dir = Path(cfg.prepare_data.raw_path)
     processed_dir = Path(cfg.data.processed_path)
 
     # Create fake images

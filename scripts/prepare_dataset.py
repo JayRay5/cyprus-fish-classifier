@@ -59,7 +59,7 @@ def split_data(cfg: DictConfig):
 
 @hydra.main(version_base=None, config_path="../configs", config_name="config")
 def main(cfg: DictConfig):
-    split_data(cfg.data)
+    split_data(cfg.prepare_data)
 
 
 if __name__ == "__main__":
