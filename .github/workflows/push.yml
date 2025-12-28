@@ -36,11 +36,11 @@ jobs:
       run: poetry install --no-interaction --no-root
 
     - name: Security Scan with Bandit
-      run: bandit -r src/ -ll -ii
+      run: poetry run bandit -r src/ scripts/ -ll -ii
 
     - name: Run Unit Tests 
       env:
         HF_TOKEN: ${{ secrets.HF_TOKEN }} 
-      run: pytest -v 
+      run: poetry run pytest -v 
 
    
