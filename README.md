@@ -25,4 +25,5 @@ Install git hooks
 ```bash
 poetry run pre-commit install
 poetry run pre-commit install --hook-type pre-push
+chmod +x .git/hooks/pre-push
 ```
