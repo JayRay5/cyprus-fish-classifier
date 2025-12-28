@@ -10,17 +10,10 @@ conda activate cyprus-fish-env
 Install poetry and libs
 ```bash
 pip install poetry
-
-poetry config virtualenvs.in-project true --local # virtual env in the project
-poetry env use $(which python)
-
-poetry install # install libs in the venv
+poetry config virtualenvs.create false # install libs in the conda env
+poetry install 
 ```
 Install git hooks
 ```bash
 poetry run pre-commit install
-```
-Create the .env file for the secret variables
-```bash
-touch .env
 ```
