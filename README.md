@@ -1,4 +1,4 @@
-# Cyprus Fish Recognition App
+# 🐠 Cyprus Fish Recognition App
 
 
 ## Installation & Setup
