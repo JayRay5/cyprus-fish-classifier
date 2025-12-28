@@ -1,0 +1,8 @@
+# conf/config.yaml
+defaults:
+  - _self_          # Charge ce fichier en premier (si tu as des variables globales ici)
+  - data: cyprus_fish    # Charge conf/data/cyprus.yaml et le met sous "cfg.data"
+ # - model: resnet50 # (Exemple) Charge conf/model/resnet50.yaml sous "cfg.model"
+
+# Ici, tu peux mettre des variables globales si besoin (ex: seed)
+seed: 42

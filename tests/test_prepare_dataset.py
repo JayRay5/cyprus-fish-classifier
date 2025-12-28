@@ -1,3 +1,5 @@
+from omegaconf import OmegaConf
+from pathlib import Path
 from scripts.prepare_dataset import split_data
 
 
@@ -5,20 +7,32 @@ def test_split_data_ratio(tmp_path):
     """
     Check split preparation
     """
+    cfg = OmegaConf.create(
+        {
+            "data": {
+                "raw_path": str(tmp_path / "raw"),
+                "processed_path": str(tmp_path / "processed"),
+                "split_ratio": [0.8, 0.2],
+                "seed": 42,
+                "valid_extensions": [".jpg", ".jpeg", ".png"],
+            }
+        }
+    )
+
     # Create temporary fake folders
-    raw_dir = tmp_path / "raw"
-    processed_dir = tmp_path / "processed"
+    raw_dir = Path(cfg.data.raw_path)
+    processed_dir = Path(cfg.data.processed_path)
 
     # Create fake images
     class_dir = raw_dir / "fish_a"
     class_dir.mkdir(parents=True)
 
     for i in range(10):
-        (class_dir / f"img_{i}.jpg").touch()  # Crée un fichier vide
+        (class_dir / f"img_{i}.jpg").touch()  # Create an empty file
 
-    split_data(raw_path=raw_dir, processed_path=processed_dir)
+    split_data(cfg.data)
 
-    # 3. ASSERTIONS (Vérifications)
+    # 3. ASSERTIONS
 
     # Check images in split dir
     assert (processed_dir / "train" / "fish_a").exists()
@@ -28,7 +42,7 @@ def test_split_data_ratio(tmp_path):
     train_files = list((processed_dir / "train" / "fish_a").glob("*.jpg"))
     test_files = list((processed_dir / "test" / "fish_a").glob("*.jpg"))
 
-    # Vérifier le ratio (80% train, 20% test sur 10 images -> 8 et 2)
+    # Check ratio
     assert len(train_files) == 8
     assert len(test_files) == 2
 
