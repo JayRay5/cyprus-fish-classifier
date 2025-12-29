@@ -17,6 +17,17 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+    - name: Free Disk Space (Ubuntu) 🧹
+      uses: jlumbroso/free-disk-space@main
+      with:
+        tool-cache: true
+        android: true
+        dotnet: true
+        haskell: true
+        large-packages: true
+        docker-images: true
+        swap-storage: false
+
     - name: Checkout code
       uses: actions/checkout@v4
 
@@ -30,13 +41,20 @@ jobs:
       with:
           virtualenvs-create: true
           virtualenvs-in-project: true
-    - name: Install PyTorch CPU
-      run: |
-        pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
-        
+
+      # check if cache already exists
+    - name: Load cached venv
+      id: cached-poetry-dependencies
+      uses: actions/cache@v3
+      with:
+        path: .venv
+        key: venv-cpu-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+
     - name: Install dependencies
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      run: poetry install --no-interaction --no-root
+      run: |
+        pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+        poetry install --no-interaction --no-root poetry install --no-interaction --no-root
 
     - name: Security Scan with Bandit
       run: poetry run bandit -r src/ scripts/ -ll -ii
