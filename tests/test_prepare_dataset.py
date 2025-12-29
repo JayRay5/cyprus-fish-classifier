@@ -1,27 +1,15 @@
-from omegaconf import OmegaConf
 from pathlib import Path
 from scripts.prepare_dataset import split_data
 
 
-def test_split_data_ratio(tmp_path):
+def test_split_data_ratio(mock_config):
     """
     Check split preparation
     """
-    cfg = OmegaConf.create(
-        {
-            "prepare_data": {
-                "raw_path": str(tmp_path / "raw"),
-                "processed_path": str(tmp_path / "processed"),
-                "split_ratio": [0.8, 0.2],
-                "seed": 42,
-                "valid_extensions": [".jpg", ".jpeg", ".png"],
-            }
-        }
-    )
 
     # Create temporary fake folders
-    raw_dir = Path(cfg.prepare_data.raw_path)
-    processed_dir = Path(cfg.prepare_data.processed_path)
+    raw_dir = Path(mock_config.prepare_data.raw_path)
+    processed_dir = Path(mock_config.prepare_data.processed_path)
 
     # Create fake images
     class_dir = raw_dir / "fish_a"
@@ -30,7 +18,7 @@ def test_split_data_ratio(tmp_path):
     for i in range(10):
         (class_dir / f"img_{i}.jpg").touch()  # Create an empty file
 
-    split_data(cfg.prepare_data)
+    split_data(mock_config.prepare_data)
 
     # 3. ASSERTIONS
 

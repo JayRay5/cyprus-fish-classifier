@@ -11,6 +11,7 @@ __pycache__/
 outputs/
 
 # Heavy files
+.cache/
 data/
 artifacts/*.pt  
 artifacts/*.pth

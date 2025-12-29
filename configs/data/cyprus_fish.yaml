@@ -1,0 +1,9 @@
+hf_repo_id: "JayRay5/cyprus-fish-dataset"
+revision: "be9dbe8f4048fe5c399a71713fcb8d0cfdd37ae5"
+num_classes: 5
+class_names: 
+  - apogon_imberbis
+  - epinephelus_marginatus
+  - pempheris_vanicolensis
+  - sparisoma_cretense
+  - thalassoma_pavo

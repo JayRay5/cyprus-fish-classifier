@@ -6,12 +6,15 @@ authors = [
     {name = "Rayane Bencharef"}
 ]
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.11,<3.13"
 dependencies = [
     "hydra-core (>=1.3.2,<2.0.0)",
     "omegaconf (>=2.3.0,<3.0.0)",
     "datasets (>=4.4.2,<5.0.0)",
-    "pillow (>=12.0.0,<13.0.0)"
+    "pillow (>=12.0.0,<13.0.0)",
+    "torch (>=2.9.1,<3.0.0)",
+    "torchvision (>=0.24.1,<0.25.0)",
+    "transformers (>=4.57.3,<5.0.0)"
 ]
 
 
