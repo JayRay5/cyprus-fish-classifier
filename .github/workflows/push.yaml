@@ -30,7 +30,10 @@ jobs:
       with:
           virtualenvs-create: true
           virtualenvs-in-project: true
-
+    - name: Install PyTorch CPU
+      run: |
+        pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+        
     - name: Install dependencies
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       run: poetry install --no-interaction --no-root
