@@ -17,7 +17,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - name: Free Disk Space (Ubuntu) 🧹
+    - name: Free Disk Space (Ubuntu) 
       uses: jlumbroso/free-disk-space@main
       with:
         tool-cache: true
@@ -54,7 +54,7 @@ jobs:
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       run: |
         pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
-        poetry install --no-interaction --no-root poetry install --no-interaction --no-root
+        poetry install --no-interaction --no-root
 
     - name: Security Scan with Bandit
       run: poetry run bandit -r src/ scripts/ -ll -ii
