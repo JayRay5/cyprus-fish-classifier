@@ -33,12 +33,21 @@ def mock_config(tmp_path):
                 "num_classes": 3,
                 "class_names": ["fish_A", "fish_B", "fish_C"],
             },
-            "processor": {
+            "model": {
                 "model_name": "fake/vit-model",
                 "revision": "hffake02",
                 "batch_size": 2,
                 "num_workers": 0,
                 "pin_memory": False,
+            },
+            "train": {
+                "batch_size": 2,
+                "epochs": 1,
+                "lr": 5e-5,
+                "weight_decay": 0.01,
+                "num_workers": 2,
+                "seed": 42,
+                "device": "cpu",
             },
         }
     )

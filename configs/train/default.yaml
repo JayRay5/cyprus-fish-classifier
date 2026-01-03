@@ -1,0 +1,7 @@
+batch_size: 32   # ConvNeXt est léger, on peut monter
+epochs: 10
+lr: 5e-5
+weight_decay: 0.01
+num_workers: 4   # Lié à la machine d'entraînement
+seed: 42
+device: "cuda"
