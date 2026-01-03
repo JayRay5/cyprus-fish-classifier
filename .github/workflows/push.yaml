@@ -2,7 +2,10 @@ name: CI/CD Pipeline - Test
 
 on:
   push:
-    branches: [ "main" ]
+    branches: 
+      - "main"
+      - "feat/**"  # Autorise feat/training-loop, feat/dataloader, etc.
+      - "fix/**"
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
