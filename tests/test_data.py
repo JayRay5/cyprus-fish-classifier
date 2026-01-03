@@ -19,13 +19,14 @@ def test_dataset_initialization(mock_config, mock_external_deps):
     assert len(ds) == 10
 
     # Check __getitem__
-    pixel_values, label_one_hot = ds[0]
+    pixel_values = ds[0]["pixel_values"]
+    labels = ds[0]["labels"]
 
     # Check shape
     assert pixel_values.shape == (3, 224, 224)
-    assert label_one_hot.shape == (3,)
+    assert labels.shape == (3,)
     # Check one hot encoding
-    assert torch.equal(label_one_hot, torch.tensor([0.0, 1.0, 0.0]))
+    assert torch.equal(labels, torch.tensor([0.0, 1.0, 0.0]))
 
 
 def test_dataloader_batching(mock_config, mock_external_deps):
@@ -46,7 +47,9 @@ def test_dataloader_batching(mock_config, mock_external_deps):
         shuffle=False,
     )
 
-    batch_images, batch_labels = next(iter(dl))
+    batch = next(iter(dl))
+    batch_images = batch["pixel_values"]
+    batch_labels = batch["labels"]
 
     # Check batch shape
     assert batch_images.shape == (2, 3, 224, 224)

@@ -1,3 +1,3 @@
 hf_repo_id: "facebook/convnext-tiny-224"
 revision: "6166b7613034066690a621d8bf25ffdf181a34f0"
-freeze_backbone: false
+training_output_dir: "convnext-cyprus-fish-cls"

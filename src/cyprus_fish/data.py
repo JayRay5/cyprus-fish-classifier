@@ -54,4 +54,4 @@ class CyprusFishDataset(Dataset):
         label_one_hot = torch.zeros(self.num_classes, dtype=torch.float32)
         label_one_hot[label_idx] = 1.0
 
-        return pixel_values, label_one_hot
+        return {"pixel_values": pixel_values, "labels": label_one_hot}

@@ -4,4 +4,4 @@ split_ratio: [0.8,0.2]
 valid_extensions: [".jpg", ".jpeg", ".png"]
 seed: 42
 hf_repo_id: "JayRay5/cyprus-fish-dataset"
-hf_private: true
+hf_private: True
