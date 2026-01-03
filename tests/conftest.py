@@ -34,11 +34,9 @@ def mock_config(tmp_path):
                 "class_names": ["fish_A", "fish_B", "fish_C"],
             },
             "model": {
-                "model_name": "fake/vit-model",
+                "hf_repo_id": "fake/vit-model",
                 "revision": "hffake02",
-                "batch_size": 2,
-                "num_workers": 0,
-                "pin_memory": False,
+                "freeze_backbone": False,
             },
             "train": {
                 "batch_size": 2,

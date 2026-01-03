@@ -11,7 +11,7 @@ class CyprusFishDataset(Dataset):
         repo_id: str,
         repo_revision: str,
         model_name: str,
-        processor_revision,
+        model_revision,
         split: str,
         num_classes: int = 5,
     ):
@@ -19,7 +19,7 @@ class CyprusFishDataset(Dataset):
         self.hf_dataset = load_dataset(repo_id, split=split, revision=repo_revision)  # nosec B615
 
         self.processor = AutoImageProcessor.from_pretrained(
-            model_name, revision=processor_revision
+            model_name, revision=model_revision
         )  # nosec B615
 
         if split == "train":

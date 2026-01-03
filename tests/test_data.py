@@ -10,8 +10,8 @@ def test_dataset_initialization(mock_config, mock_external_deps):
     ds = CyprusFishDataset(
         repo_id=mock_config.data.repo_id,
         repo_revision=mock_config.data.repo_revision,
-        model_name=mock_config.processor.model_name,
-        processor_revision=mock_config.processor.revision,
+        model_name=mock_config.model.hf_repo_id,
+        model_revision=mock_config.model.revision,
         split="train",
         num_classes=mock_config.data.num_classes,
     )
@@ -34,8 +34,8 @@ def test_dataloader_batching(mock_config, mock_external_deps):
     ds = CyprusFishDataset(
         repo_id=mock_config.data.repo_id,
         repo_revision=mock_config.data.repo_revision,
-        model_name=mock_config.processor.model_name,
-        processor_revision=mock_config.processor.revision,
+        model_name=mock_config.model.hf_repo_id,
+        model_revision=mock_config.model.revision,
         split="train",
         num_classes=mock_config.data.num_classes,
     )
