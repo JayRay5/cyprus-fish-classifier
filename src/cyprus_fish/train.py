@@ -228,17 +228,19 @@ def train(cfg: DictConfig):
 
         if hasattr(train_dataset, "processor"):
             train_dataset.processor.save_pretrained(save_path)
-        try:
-            create_repo(
-                repo_id=cfg.model.target_hf_repo_id, exist_ok=True, private=False
+
+        if cfg.train.push_to_hub:
+            try:
+                create_repo(
+                    repo_id=cfg.model.target_hf_repo_id, exist_ok=True, private=False
+                )
+
+            except Exception as e:
+                print(f"Warning: {e}")
+
+            upload_folder(
+                folder_path=save_path,
+                repo_id=cfg.model.target_hf_repo_id,
+                commit_message=f"Update weights, new test acc: {current_acc:.2%}",
+                ignore_patterns=["README.md", ".git*"],
             )
-
-        except Exception as e:
-            print(f"Warning: {e}")
-
-        upload_folder(
-            folder_path=save_path,
-            repo_id=cfg.model.target_hf_repo_id,
-            commit_message=f"Update weights, new test acc: {current_acc:.2%}",
-            ignore_patterns=["README.md", ".git*"],
-        )
