@@ -11,4 +11,4 @@ seed: 42
 device: "cuda"
 fp16: True
 freeze_backbone: True
-push_to_hub: True
+push_to_hub: False
