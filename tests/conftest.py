@@ -41,7 +41,7 @@ def mock_config(tmp_path):
             },
             "train": {
                 "k_folds": 2,
-                "batch_size": 1,
+                "batch_size": 2,
                 "grad_acc": 1,
                 "epochs": 1,
                 "lr": 3e-4,
