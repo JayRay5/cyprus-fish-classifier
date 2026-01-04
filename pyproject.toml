@@ -43,4 +43,5 @@ dev = [
 ]
 
 [tool.poetry.scripts]
+kfold_training = "src.cyprus_fish.train:train_k_fold"
 training = "src.cyprus_fish.train:train"

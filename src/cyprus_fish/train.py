@@ -3,10 +3,13 @@ import torch
 import numpy as np
 import os
 import json
+from datetime import datetime
+from huggingface_hub import create_repo, upload_folder
 from omegaconf import DictConfig
 from sklearn.model_selection import StratifiedKFold
 from torch.utils.data import Subset
 from transformers import AutoModelForImageClassification, TrainingArguments, Trainer
+
 from src.cyprus_fish.data import CyprusFishDataset
 from src.cyprus_fish.utils import (
     compute_metrics,
@@ -16,11 +19,17 @@ from src.cyprus_fish.utils import (
 
 
 def model_loading(cfg: DictConfig):
+    class_names = list(cfg.data.class_names)
+    id2label = {i: name for i, name in enumerate(class_names)}
+    label2id = {name: i for i, name in enumerate(class_names)}
+
     model = AutoModelForImageClassification.from_pretrained(
         cfg.model.hf_repo_id,
         revision=cfg.model.revision,
         num_labels=cfg.data.num_classes,
         ignore_mismatched_sizes=True,
+        id2label=id2label,
+        label2id=label2id,
     ).to(cfg.train.device)  # nosec B615
 
     if cfg.train.get("freeze_backbone", True):
@@ -33,8 +42,8 @@ def model_loading(cfg: DictConfig):
 
 
 @hydra.main(version_base=None, config_path="../../configs", config_name="config")
-def train(cfg: DictConfig):
-    save_path = f"experiments/{cfg.model.training_output_dir}"
+def train_k_fold(cfg: DictConfig):
+    save_path = f"experiments/{cfg.model.training_output_dir}/k_fold_validation"
     if os.path.exists(save_path):
         n_dir = len(os.listdir(save_path))
         save_path = f"{save_path}/m_{n_dir}"
@@ -134,5 +143,102 @@ def train(cfg: DictConfig):
         json.dump(global_results, f, indent=4)
 
 
-if __name__ == "__main__":
-    train()
+@hydra.main(version_base=None, config_path="../../configs", config_name="config")
+def train(cfg: DictConfig):
+    model_path = f"experiments/{cfg.model.training_output_dir}"
+    save_path = f"{model_path}/full_training"
+    if os.path.exists(save_path):
+        n_dir = len(os.listdir(save_path))
+        save_path = f"{save_path}/m_{n_dir}"
+        os.makedirs(save_path, exist_ok=True)
+    else:
+        save_path = f"{save_path}/m_0"
+        os.makedirs(save_path)
+
+    train_dataset = CyprusFishDataset(
+        repo_id=cfg.data.hf_repo_id,
+        repo_revision=cfg.data.revision,
+        model_name=cfg.model.hf_repo_id,
+        model_revision=cfg.model.revision,
+        split="train",
+        num_classes=cfg.data.num_classes,
+    )
+
+    test_dataset = CyprusFishDataset(
+        repo_id=cfg.data.hf_repo_id,
+        repo_revision=cfg.data.revision,
+        model_name=cfg.model.hf_repo_id,
+        model_revision=cfg.model.revision,
+        split="test",
+        num_classes=cfg.data.num_classes,
+    )
+
+    model = model_loading(cfg)
+
+    training_args = TrainingArguments(
+        output_dir=save_path,
+        remove_unused_columns=False,
+        learning_rate=cfg.train.lr,
+        lr_scheduler_type=cfg.train.scheduler,
+        per_device_train_batch_size=cfg.train.batch_size,
+        gradient_accumulation_steps=cfg.train.grad_acc,
+        per_device_eval_batch_size=cfg.train.batch_size,
+        num_train_epochs=cfg.train.epochs,
+        warmup_steps=cfg.train.warmup_steps,
+        fp16=cfg.train.fp16,
+        push_to_hub=False,
+    )
+
+    trainer = Trainer(
+        model=model,
+        args=training_args,
+        train_dataset=train_dataset,
+        compute_metrics=compute_metrics,
+    )
+
+    trainer.train()
+    save_path = f"{save_path}/end_training_weights"
+    trainer.save_model(save_path)
+
+    metrics = trainer.evaluate(eval_dataset=test_dataset, metric_key_prefix="test")
+
+    test_results = {"test_metrics": metrics}
+
+    with open(f"{save_path}/results.json", "w") as f:
+        json.dump(test_results, f, indent=4)
+
+    tracker_file = f"{model_path}/best_model_tracker.json"
+    if os.path.exists(tracker_file):
+        with open(tracker_file, "r") as f:
+            data = json.load(f)
+            best_recorded_acc = data.get("test_accuracy", 0.0)
+    else:
+        best_recorded_acc = 0.0
+
+    current_acc = metrics["test_accuracy"]
+
+    if current_acc > best_recorded_acc:
+        new_record = {
+            "test_accuracy": current_acc,
+            "local_model_path": save_path,
+            "date": datetime.now().isoformat(),
+        }
+        with open(tracker_file, "w") as f:
+            json.dump(new_record, f, indent=4)
+
+        if hasattr(train_dataset, "processor"):
+            train_dataset.processor.save_pretrained(save_path)
+        try:
+            create_repo(
+                repo_id=cfg.model.target_hf_repo_id, exist_ok=True, private=False
+            )
+
+        except Exception as e:
+            print(f"Warning: {e}")
+
+        upload_folder(
+            folder_path=save_path,
+            repo_id=cfg.model.target_hf_repo_id,
+            commit_message=f"Update weights, new test acc: {current_acc:.2%}",
+            ignore_patterns=["README.md", ".git*"],
+        )
