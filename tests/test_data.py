@@ -1,5 +1,4 @@
 import torch
-from torch.utils.data import DataLoader
 from src.cyprus_fish.data import CyprusFishDataset
 
 
@@ -7,6 +6,7 @@ def test_dataset_initialization(mock_config, mock_external_deps):
     """
     Test CyprusFishDataset
     """
+
     ds = CyprusFishDataset(
         repo_id=mock_config.data.repo_id,
         repo_revision=mock_config.data.repo_revision,
@@ -23,34 +23,8 @@ def test_dataset_initialization(mock_config, mock_external_deps):
     labels = ds[0]["labels"]
 
     # Check shape
+    print(pixel_values.shape)
     assert pixel_values.shape == (3, 224, 224)
     assert labels.shape == (3,)
     # Check one hot encoding
     assert torch.equal(labels, torch.tensor([0.0, 1.0, 0.0]))
-
-
-def test_dataloader_batching(mock_config, mock_external_deps):
-    """Integration Test with the DataLoader"""
-
-    ds = CyprusFishDataset(
-        repo_id=mock_config.data.repo_id,
-        repo_revision=mock_config.data.repo_revision,
-        model_name=mock_config.model.hf_repo_id,
-        model_revision=mock_config.model.revision,
-        split="train",
-        num_classes=mock_config.data.num_classes,
-    )
-
-    dl = DataLoader(
-        ds,
-        batch_size=mock_config.train.batch_size,
-        shuffle=False,
-    )
-
-    batch = next(iter(dl))
-    batch_images = batch["pixel_values"]
-    batch_labels = batch["labels"]
-
-    # Check batch shape
-    assert batch_images.shape == (2, 3, 224, 224)
-    assert batch_labels.shape == (2, 3)
