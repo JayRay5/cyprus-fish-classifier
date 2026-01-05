@@ -54,4 +54,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
   CMD curl -f http://localhost:7860/docs || exit 1
 
 # 12. Start
-CMD ["./start.sh"]
+CMD ["./src/app/start.sh"]
