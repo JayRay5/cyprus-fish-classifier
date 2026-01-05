@@ -1,0 +1,14 @@
+k_folds: 5
+batch_size: 32   
+grad_acc: 1
+epochs: 50
+lr: 3e-4
+warmup_steps: 0
+weight_decay: 0.01
+scheduler: "constant"
+num_workers: 4   
+seed: 42
+device: "cuda"
+fp16: True
+freeze_backbone: True
+push_to_hub: True

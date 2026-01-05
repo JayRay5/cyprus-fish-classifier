@@ -17,3 +17,5 @@ artifacts/*.pt
 artifacts/*.pth
 !artifacts/*.onnx # Only accept lightweights files
 wandb/          # Logs Weights & Biases
+*.safetensors
+experiments/

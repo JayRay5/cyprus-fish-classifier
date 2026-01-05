@@ -33,12 +33,27 @@ def mock_config(tmp_path):
                 "num_classes": 3,
                 "class_names": ["fish_A", "fish_B", "fish_C"],
             },
-            "processor": {
-                "model_name": "fake/vit-model",
+            "model": {
+                "hf_repo_id": "fake/vit-model",
                 "revision": "hffake02",
+                "training_output_dir": "convnext-cyprus-fish-cls",
+                "target_hf_repo_id": "fake2/convnext",
+            },
+            "train": {
+                "k_folds": 2,
                 "batch_size": 2,
-                "num_workers": 0,
-                "pin_memory": False,
+                "grad_acc": 1,
+                "epochs": 1,
+                "lr": 3e-4,
+                "warmup_steps": 0,
+                "weight_decay": 0.01,
+                "scheduler": "constant",
+                "num_workers": 2,
+                "seed": 42,
+                "device": "cpu",
+                "fp16": False,
+                "freeze_backbone": True,
+                "push_to_hub": False,
             },
         }
     )

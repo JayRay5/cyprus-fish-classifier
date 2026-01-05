@@ -10,8 +10,8 @@ class CyprusFishDataset(Dataset):
         self,
         repo_id: str,
         repo_revision: str,
-        processor_name: str,
-        processor_revision,
+        model_name: str,
+        model_revision,
         split: str,
         num_classes: int = 5,
     ):
@@ -19,7 +19,7 @@ class CyprusFishDataset(Dataset):
         self.hf_dataset = load_dataset(repo_id, split=split, revision=repo_revision)  # nosec B615
 
         self.processor = AutoImageProcessor.from_pretrained(
-            processor_name, revision=processor_revision
+            model_name, revision=model_revision
         )  # nosec B615
 
         if split == "train":
@@ -54,4 +54,4 @@ class CyprusFishDataset(Dataset):
         label_one_hot = torch.zeros(self.num_classes, dtype=torch.float32)
         label_one_hot[label_idx] = 1.0
 
-        return pixel_values, label_one_hot
+        return {"pixel_values": pixel_values, "labels": label_one_hot}
