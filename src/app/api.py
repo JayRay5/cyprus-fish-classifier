@@ -119,7 +119,7 @@ app = gr.mount_gradio_app(app, interface, path="/")
 
 
 def start():
-    uvicorn.run("src.app.api:app", host="0.0.0.0", port=8000, reload=True)  # nosec B104 (to ignore the bandit alert)
+    uvicorn.run("src.app.api:app", host="0.0.0.0", port=7860, reload=True)  # nosec B104 (to ignore the bandit alert)
 
 
 if __name__ == "__main__":

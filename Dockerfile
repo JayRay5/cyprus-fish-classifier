@@ -48,12 +48,12 @@ COPY --chown=appuser:appuser .src.app .
 # 9. Add permission
 RUN chmod +x start.sh 
 
-# 10. Open ports (8000=API, 7860=Gradio)
-EXPOSE 8000 7860
+# 10. 
+EXPOSE 7860
 
 # 11. Health check (Ping l'API toutes les 30s)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-  CMD curl -f http://localhost:8000/docs || exit 1
+  CMD curl -f http://localhost:7860/docs || exit 1
 
 # 12. Start
 CMD ["./start.sh"]
