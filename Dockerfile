@@ -43,7 +43,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
 # 8. Copy the other part of the files
-COPY --chown=appuser:appuser .src.app .
+COPY --chown=appuser:appuser src .
 
 # 9. Add permission
 RUN chmod +x start.sh 
