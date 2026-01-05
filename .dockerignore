@@ -1,0 +1,26 @@
+# Git et configs
+.git
+.gitignore
+.pre-commit-config.yaml
+
+# Virtual env
+.venv
+venv
+env
+__pycache__/
+*.pyc
+.ipynb_checkpoints
+
+# Local data
+data/
+*.ipynb
+*.log
+experiments/
+
+# Training files
+src/cyprus_fish/
+
+# Security
+.env
+Dockerfile
+.dockerignore
