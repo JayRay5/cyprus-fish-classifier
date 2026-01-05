@@ -35,10 +35,8 @@ RUN chown appuser:appuser /app
 # 6. Go to the created user
 USER appuser
 
-COPY --from=builder /tmp/requirements.txt .
-
 # 7. Install Python dependencies 
-COPY --chown=appuser:appuser requirements.txt .
+COPY --from=builder /tmp/requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
