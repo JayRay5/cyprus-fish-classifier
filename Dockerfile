@@ -1,7 +1,7 @@
 # Create the requirements.txt to download dependencies from poetry
 FROM python:3.11 as builder
 
-RUN pip install poetry
+RUN pip install poetry poetry-plugin-export
 
 WORKDIR /tmp
 
