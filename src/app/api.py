@@ -2,6 +2,7 @@ import io
 import torch
 import uvicorn
 import asyncio
+import gradio as gr
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.concurrency import run_in_threadpool
@@ -9,6 +10,7 @@ from transformers import AutoImageProcessor, AutoModelForImageClassification
 from PIL import Image
 from .config import settings
 from .utils import predict_image
+from .ui import create_ui
 
 
 constants = {}
@@ -48,7 +50,7 @@ async def lifespan(app: FastAPI):
 # --- Start the API ---
 app = FastAPI(
     title="Cyprus Fish Recognition API",
-    description="",
+    description="API for classifying fish species using ConvNext Tiny",
     version="1.0.0",
     lifespan=lifespan,
 )
@@ -56,7 +58,7 @@ app = FastAPI(
 # --- ENDPOINTS ---
 
 
-@app.get("/")
+@app.get("/health_check")
 def health_check():
     return {"status": "ok", "model_loaded": "model" in constants}
 
@@ -78,7 +80,7 @@ def model_device_check():
 
 
 @app.post("/recognize")
-async def ask_question(file: UploadFile = File(...)):
+async def recognize(file: UploadFile = File(...)):
     if "model" not in constants:
         raise HTTPException(status_code=503, detail="Model not found.")
 
@@ -111,8 +113,13 @@ async def ask_question(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+interface = create_ui(model_context=constants, model_lock=model_lock)
+
+app = gr.mount_gradio_app(app, interface, path="/")
+
+
 def start():
-    uvicorn.run("src.app.backend:app", host="0.0.0.0", port=8000, reload=True)  # nosec B104 (to ignore the bandit alert)
+    uvicorn.run("src.app.api:app", host="0.0.0.0", port=8000, reload=True)  # nosec B104 (to ignore the bandit alert)
 
 
 if __name__ == "__main__":
