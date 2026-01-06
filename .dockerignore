@@ -16,7 +16,7 @@ __pycache__/
 .ipynb_checkpoints
 
 
-# Local and training files
+# Local, training and dev files
 data/
 *.ipynb
 *.log
@@ -26,6 +26,7 @@ src/cyprus_fish/
 scripts/
 notebooks/
 configs/
+test/
 
 # Security
 .env
