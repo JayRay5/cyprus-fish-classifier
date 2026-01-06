@@ -43,7 +43,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # 8. Copy the other part of the files
 COPY --chown=appuser:appuser . .
 
-RUN echo "Je suis ici :" && pwd && echo "Voici les fichiers :" && ls -laR
+#RUN echo "Je suis ici :" && pwd && echo "Voici les fichiers :" && ls -laR
 
 # 9. Add permission
 RUN chmod +x ./src/app/start.sh 
