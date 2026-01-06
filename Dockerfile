@@ -44,7 +44,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 COPY --chown=appuser:appuser src .
 
 # 9. Add permission
-RUN chmod +x start.sh 
+RUN chmod +x ./src/app/start.sh 
 
 # 10. 
 EXPOSE 7860
