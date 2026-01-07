@@ -75,7 +75,8 @@ This repository contains the complete pipeline: from data preparation and model 
 |
 ├── tests                      # Unit Tests
 ├── .dockerignore              
-├── .gitignore                 
+├── .gitignore
+├── .pre-commit-config.yaml    # Git hooks          
 ├── Dockerfile                 
 ├── README.md                 
 ├── poetry.lock                
