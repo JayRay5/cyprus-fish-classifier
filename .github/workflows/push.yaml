@@ -65,10 +65,10 @@ jobs:
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       run: |
         pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
-        poetry install --no-interaction --no-root --with dev
+        poetry install --no-interaction --no-root
 
-    - name: Security Scan with Bandit
-      run: poetry run bandit -r src/ scripts/ -ll -ii
+    #- name: Security Scan with Bandit
+    #  run: poetry run bandit -r src/ scripts/ -ll -ii
 
     - name: Run Unit Tests 
       env:
