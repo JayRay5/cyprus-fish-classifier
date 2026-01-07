@@ -1,6 +1,5 @@
 # 🐠 Cyprus Fish Recognition
 
-[![CI/CD Pipeline](https://github.com/ton-username/ton-repo-name/actions/workflows/docker-image.yml/badge.svg)](https://github.com/JayRay5/reconnaissance_poisson_chypre/actions)
 [![Hugging Face Space](https://img.shields.io/badge/🤗%20Hugging%20Face-Space-yellow)](https://huggingface.co/spaces/JayRay5/Cyprus-Fish-Recognition-App)
 [![Docker Image](https://img.shields.io/badge/docker-ghcr.io-blue)](https://github.com/ton-username/ton-repo-name/pkgs/container/reconnaissance_poisson_chypre)
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/)
@@ -48,6 +47,38 @@ This repository contains the complete pipeline: from data preparation and model 
 ---
 
 ## 🏗️ Architecture & Workflow
+.
+├── .github
+│   └── workflows
+|       ├── push.yaml          # Check security (bandit), format (ruff), test (pytest), and deploy at each push on main
+│       └── test_docker.yaml   # Build the image of the App and deploy it to Hugging Face Space
+├── configs                    # Hydra config files for dataset, model, and training hyperparameters
+├── data                       # Raw data 
+├── scripts
+|   ├── prepare_data.py        # Split raw data into train and test
+|   └── upload_dataset.py      # Upload to the Hugging Face Hub
+├── src
+│   ├── __init__.py
+│   ├── app
+│   │   ├── __init__.py
+│   │   ├── api.py             # FastAPI 
+│   │   ├── config.py          # Settings
+|   |   ├── start.sh           # Script to start the app
+│   │   ├── ui.py              # Gradio Interface  
+│   │   └── utils.py           
+│   └── cyprus_fish
+│       ├── __init__.py
+│       ├── data.py            # Data Loader
+|       ├── train.py           # Training scripts (k-fold and global)
+|       └── utils.py
+|
+├── tests                      # Unit Tests
+├── .dockerignore              
+├── .gitignore                 
+├── Dockerfile                 
+├── README.md                 
+├── poetry.lock                
+├── pyproject.toml             
 
 The project follows a robust MLOps pipeline:
 1. **Data**: As the number of samples is small (<60 per class), the dataset is split into a train and a test set. The resulting dataset is hosted on Hugging Face Hub ([dataset](https://huggingface.co/datasets/JayRay5/cyprus-fish-dataset).
