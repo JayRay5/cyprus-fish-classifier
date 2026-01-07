@@ -19,8 +19,9 @@ def create_ui(model_context: dict, model_lock: asyncio.Lock):
                 predict_image, image, model_context["processor"], model_context["model"]
             )
 
-        if max(results.values()) <= 0.25:
+        if max(results.values()) <= 0.3:
             return "Error: the fish has not been recognize."
+
         return results
 
     banner_html = f"""
