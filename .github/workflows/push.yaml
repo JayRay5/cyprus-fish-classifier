@@ -13,7 +13,6 @@ on:
     paths-ignore:
         - 'README.md'
         - 'LICENSE'
-        - 'docs/**'  # Si tu as un dossier de documentation
         - '.gitignore'
         
   workflow_dispatch:
@@ -50,6 +49,7 @@ jobs:
     - name: Install Poetry
       uses: snok/install-poetry@v1
       with:
+          version: "2.0.0"
           virtualenvs-create: true
           virtualenvs-in-project: true
 
