@@ -18,6 +18,9 @@ def create_ui(model_context: dict, model_lock: asyncio.Lock):
             results = await run_in_threadpool(
                 predict_image, image, model_context["processor"], model_context["model"]
             )
+
+        if max(results.values()) <= 0.25:
+            return "Error: the fish has not been recognize."
         return results
 
     banner_html = f"""
