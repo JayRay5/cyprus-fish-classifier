@@ -6,7 +6,7 @@
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?style=flat&logo=PyTorch&logoColor=white)](https://pytorch.org/)
 
-An end-to-end MLOps project for classifying fish species from Cyprus using Deep Learning.
+An end-to-end MLOps project for classifying fish species from Cyprus using Deep Learning. <br>
 This project covers 5 species:
 <div align="center">
   <h3>🐟 Species overview </h3>
@@ -50,15 +50,16 @@ This repository contains the complete pipeline: from data preparation and model 
 ## 🏗️ Architecture & Workflow
 
 The project follows a robust MLOps pipeline:
-
-1.  **Data & Model:** Hosted and versioned on Hugging Face Hub ([dataset](https://huggingface.co/datasets/JayRay5/cyprus-fish-dataset), [model](https://huggingface.co/JayRay5/convnext-tiny-224-cyprus-fish-cls)).
-2.  **Training:** Fine-tuning of a **ConvNext Tiny** model using `PyTorch` and `Hydra` for configuration management. The training pipeline is achieved using the Hugging Face Trainer.
-3.  **CI/CD:** GitHub Actions pipeline that runs tests (`pytest`), security checks, builds the Docker image, and pushes it to GHCR.
-4.  **Deployment:** The Docker container is automatically deployed to a Hugging Face Space running a `FastAPI` backend with a `Gradio` UI.
+1. **Data**: As the number of samples is small (<60 per class), the dataset is split into a train and a test set. The resulting dataset is hosted on Hugging Face Hub ([dataset](https://huggingface.co/datasets/JayRay5/cyprus-fish-dataset).
+2.  **Model:** The model is based on [**ConvNext Tiny**](https://arxiv.org/pdf/2201.03545). It is hosted and versioned on Hugging Face Hub [model](https://huggingface.co/JayRay5/convnext-tiny-224-cyprus-fish-cls).
+3.  **Training:** The training pipeline uses k-fold validation and then a full finetuning on the training set once the hyperparameters are fixed. The Fine-tuning uses `PyTorch` and `Hydra` for configuration management. The training pipeline is achieved using the Hugging Face Trainer. <br>
+The best version of the model is checked after each training, and the best one is pushed on HuggingFace.
+4.  **CI/CD:** GitHub Actions pipeline that runs tests (`pytest`), security checks, builds the Docker image, and pushes it to GHCR.
+5.  **Deployment:** The Docker container is automatically deployed to a Hugging Face Space running a `FastAPI` backend with a `Gradio` UI.
 
 ## 🛠️ Tech Stack
 
-- **Core:** Python 3.11, PyTorch, Transformers (Hugging Face)
+- **Core:** Python 3.11, PyTorch, Transformers (Hugging Face), Datasets (Hugging Face)
 - **Package Management:** Poetry, Conda
 - **Configuration:** Hydra
 - **Serving:** FastAPI, Uvicorn, Gradio, Docker
