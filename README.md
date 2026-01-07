@@ -101,7 +101,7 @@ Enable the start.sh file for the launch of the application
 chmod +x .src/app/start.sh
 ```
 
-## 🧠 Data Preparation & Model Training
+## 🧠 Data Preparation, Model Training & Application
 
 This project implements a complete pipeline from raw data processing to model registry, fully configurable via **Hydra**.
 
@@ -135,7 +135,7 @@ Once the hyperparameters are validated, you can run the following script to star
 ```bash
 poetry run training
 ```
-The script will also evaluate the model on the test set. If there is another model already trained, it will compare the results with its own. If the new model is better, it will be push to the Hugging Face Hub according to the hydra config. 
+The script will also evaluate the model on the test set. If there is another model already trained, it will compare the results with its own. If the new model is better, it will be pushed to the Hugging Face Hub according to the hydra config. 
 
 
 ### 3. Application 
