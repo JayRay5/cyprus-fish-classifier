@@ -47,6 +47,7 @@ This repository contains the complete pipeline: from data preparation and model 
 ---
 
 ## 🏗️ Architecture & Workflow
+```bash
 .
 ├── .github
 │   └── workflows
@@ -78,7 +79,8 @@ This repository contains the complete pipeline: from data preparation and model 
 ├── Dockerfile                 
 ├── README.md                 
 ├── poetry.lock                
-├── pyproject.toml             
+└── pyproject.toml
+```        
 
 The project follows a robust MLOps pipeline:
 1. **Data**: As the number of samples is small (<60 per class), the dataset is split into a train and a test set. The resulting dataset is hosted on Hugging Face Hub ([dataset](https://huggingface.co/datasets/JayRay5/cyprus-fish-dataset).
