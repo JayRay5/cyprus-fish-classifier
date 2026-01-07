@@ -19,3 +19,6 @@ artifacts/*.pth
 wandb/          # Logs Weights & Biases
 *.safetensors
 experiments/
+
+#TMP files
+*.out

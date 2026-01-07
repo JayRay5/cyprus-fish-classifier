@@ -67,4 +67,75 @@ jobs:
         HF_TOKEN: ${{ secrets.HF_TOKEN }} 
       run: poetry run pytest -v 
 
+  build-and-push:
+      needs: test
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      runs-on: ubuntu-latest
+      permissions:
+          contents: read
+          packages: write
+
+      steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      
+      - name: Lowercase Repo Name
+        run: |
+          echo "IMAGE_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} # Define the Image name
+          tags: |
+              type=raw,value=latest
+              type=sha
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  deploy-to-hf:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Lowercase Repo Name for URL
+        run: |
+          echo "LOWERCASE_REPO=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+      
+      - name: Update HF Space Dockerfile
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_USERNAME: JayRay5      
+          SPACE_NAME: Cyprus-Fish-Recognition-App     
+          DOCKER_IMAGE: ghcr.io/${{ env.LOWERCASE_REPO }}:latest
+        run: |
+          git config --global user.email "bot@github.com"
+          git config --global user.name "GitHub Action Bot"
+          
+          git clone https://oauth2:$HF_TOKEN@huggingface.co/spaces/$HF_USERNAME/$SPACE_NAME space_repo
+          cd space_repo
+          
+          # Debug : Afficher l'image qu'on va écrire (pour vérifier)
+          echo "Deploying Image: $DOCKER_IMAGE"
+          
+          echo "FROM $DOCKER_IMAGE" > Dockerfile
+          
+          git add Dockerfile
+          git commit -m "Deploy: Update image from GitHub Actions" --allow-empty
+          git push --force
+
    

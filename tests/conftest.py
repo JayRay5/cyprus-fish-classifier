@@ -4,6 +4,7 @@ import pytest
 from PIL import Image
 from omegaconf import OmegaConf
 from unittest.mock import MagicMock, patch
+from transformers.image_processing_base import BatchFeature
 
 
 @pytest.fixture(scope="session")
@@ -62,7 +63,7 @@ def mock_config(tmp_path):
 
 @pytest.fixture(scope="session")
 def mock_hf_item():
-    """Simule un dictionnaire renvoyé par Hugging Face Dataset"""
+    """Mimick a dict return by an hf dataset"""
     return {"image": Image.new("RGB", (100, 100), color="red"), "label": 1}
 
 
@@ -82,9 +83,25 @@ def mock_external_deps(mock_hf_item):
 
         # Processor
         mock_processor_instance = MagicMock()
-        mock_processor_instance.return_value = {
-            "pixel_values": torch.randn(1, 3, 224, 224)
-        }
+        mock_processor_instance.return_value = BatchFeature(
+            {"pixel_values": torch.randn(1, 3, 224, 224)}
+        )
         mock_processor_cls.return_value = mock_processor_instance
 
-        yield {"load_dataset": mock_load_dataset, "processor": mock_processor_instance}
+        # Model
+        model = MagicMock()
+        model.device = "cpu"
+        model.dtype = torch.float32
+
+        model.config.id2label = {0: "Fish_A", 1: "Fish_B", 2: "Fish_C"}
+
+        mock_outputs = MagicMock()
+        mock_outputs.logits = torch.tensor([[0.0, 0.0, 0.5]])
+
+        model.return_value = mock_outputs
+
+        yield {
+            "load_dataset": mock_load_dataset,
+            "processor": mock_processor_instance,
+            "model": model,
+        }

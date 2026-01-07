@@ -1,0 +1,34 @@
+# Git et configs
+.git
+.gitignore
+.pre-commit-config.yaml
+.cache/
+.github/
+README.md
+
+
+# Virtual env
+.venv
+venv
+env
+__pycache__/
+*.pyc
+.ipynb_checkpoints
+
+
+# Local, training and dev files
+data/
+*.ipynb
+*.log
+*.out
+experiments/
+src/cyprus_fish/
+scripts/
+notebooks/
+configs/
+test/
+
+# Security
+.env
+Dockerfile
+.dockerignore

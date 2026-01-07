@@ -1,0 +1,126 @@
+name: CI/CD Pipeline - Test, Build & Deploy
+
+on:
+  push:
+    branches: [ "feature/inference-app" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Free Disk Space (Ubuntu) 
+              uses: jlumbroso/free-disk-space@main
+              with:
+                tool-cache: true
+                android: true
+                dotnet: true
+                haskell: true
+                large-packages: true
+                docker-images: true
+                swap-storage: false
+
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Python 3.11.5
+              uses: actions/setup-python@v5
+              with:
+                python-version: "3.11.5"
+
+            - name: Install Poetry
+              uses: snok/install-poetry@v1
+              with:
+                virtualenvs-create: true
+                virtualenvs-in-project: true
+
+             # check if cache already exists
+            - name: Load cached venv
+              id: cached-poetry-dependencies
+              uses: actions/cache@v3
+              with:
+                path: .venv
+                key: venv-cpu-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+
+            - name: Install dependencies
+              if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+              run: |
+                pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+                poetry install --no-interaction --no-root
+
+
+        # =======
+    build-and-push:
+        needs: test
+        if: github.event_name == 'push'
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            packages: write
+
+        steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+
+        # lower case correction
+        - name: Lowercase Repo Name
+          run: |
+           echo "IMAGE_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+        - name: Log in to the Container registry
+          uses: docker/login-action@v3
+          with:
+            registry: ${{ env.REGISTRY }}
+            username: ${{ github.actor }}
+            password: ${{ secrets.GITHUB_TOKEN }}
+
+        - name: Extract metadata
+          id: meta
+          uses: docker/metadata-action@v5
+          with:
+            images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} # Define the Image name
+            tags: |
+                type=raw,value=latest
+                type=sha
+
+        - name: Build and push Docker image
+          uses: docker/build-push-action@v5
+          with:
+            context: .
+            push: true
+            tags: ${{ steps.meta.outputs.tags }}
+            labels: ${{ steps.meta.outputs.labels }}
+
+    deploy-to-hf:
+        needs: build-and-push
+        runs-on: ubuntu-latest
+        steps:
+        - name: Lowercase Repo Name for URL
+          run: |
+            echo "LOWERCASE_REPO=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+        
+        - name: Update HF Space Dockerfile
+          env:
+            HF_TOKEN: ${{ secrets.HF_TOKEN }}
+            HF_USERNAME: JayRay5      
+            SPACE_NAME: Cyprus-Fish-Recognition-App     
+            DOCKER_IMAGE: ghcr.io/${{ env.LOWERCASE_REPO }}:latest
+          run: |
+            git config --global user.email "bot@github.com"
+            git config --global user.name "GitHub Action Bot"
+            
+            git clone https://oauth2:$HF_TOKEN@huggingface.co/spaces/$HF_USERNAME/$SPACE_NAME space_repo
+            cd space_repo
+            
+            echo "Deploying Image: $DOCKER_IMAGE"
+            
+            echo "FROM $DOCKER_IMAGE" > Dockerfile
+            
+            git add Dockerfile
+            git commit -m "Deploy: Update image from GitHub Actions" --allow-empty
+            git push --force
