@@ -135,12 +135,12 @@ Enable the start.sh file for the launch of the application
 chmod +x .src/app/start.sh
 ```
 
-## 🧠 Data Preparation, Model Training & Application
+## 🛠️ Data Preparation, 🧠 Model Training & 💻 Application
 
 This project implements a complete pipeline from raw data processing to model registry, fully configurable via **Hydra**.
 
 
-### 1. Data Preparation & Upload 📦
+### 1. Data Preparation & Upload 
 
 The raw images are split into a train and a test set and uploaded to the Hugging Face Hub as a `Dataset`. 
 
