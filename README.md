@@ -91,7 +91,7 @@ The best version of the model is checked after each training, and the best one i
 4.  **CI/CD:** GitHub Actions pipeline that runs tests (`pytest`), security checks, builds the Docker image, and pushes it to GHCR.
 5.  **Deployment:** The Docker container is automatically deployed to a Hugging Face Space running a `FastAPI` backend with a `Gradio` UI.
 
-## 🛠️ Tech Stack
+## 🧰 Tech Stack
 
 - **Core:** Python 3.11, PyTorch, Transformers (Hugging Face), Datasets (Hugging Face)
 - **Package Management:** Poetry, Conda
