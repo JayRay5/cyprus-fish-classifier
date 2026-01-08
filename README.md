@@ -158,7 +158,7 @@ The training hyperparameters can be set using hydra in the config folder. <br>
 The experiments are saved in an experiments folder. <br>
 As there is a small number of samples, the training pipeline is split into two stages:
 
-#### 1: K-fold validation
+#### 1: K-fold cross-validation
 This step allows the validation of hyperparameters.
 ```bash
 poetry run kfold_training
