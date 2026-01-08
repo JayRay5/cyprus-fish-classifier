@@ -54,7 +54,8 @@ This repository contains the complete pipeline: from data preparation and model 
 |       ├── push.yaml          # Check security (bandit), format (ruff), test (pytest), and deploy at each push on main
 │       └── test_docker.yaml   # Build the image of the App and deploy it to Hugging Face Space
 ├── configs                    # Hydra config files for dataset, model, and training hyperparameters
-├── data                       # Raw data 
+├── data                       # Raw data
+├── experiments                # Folder to store experiment results (k-fold cross-validation and global training)
 ├── scripts
 |   ├── prepare_data.py        # Split raw data into train and test
 |   └── upload_dataset.py      # Upload to the Hugging Face Hub
