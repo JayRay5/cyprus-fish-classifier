@@ -1,7 +1,7 @@
 # 🐠 Cyprus Fish Recognition
 
 [![Hugging Face Space](https://img.shields.io/badge/🤗%20Hugging%20Face-Space-yellow)](https://huggingface.co/spaces/JayRay5/Cyprus-Fish-Recognition-App)
-[![Docker Image](https://img.shields.io/badge/docker-ghcr.io-blue)](https://github.com/ton-username/ton-repo-name/pkgs/container/reconnaissance_poisson_chypre)
+[![Docker Image](https://img.shields.io/badge/docker-ghcr.io-blue)](https://github.com/tJayRay5/cyprus-fish-classifier/pkgs/container/cyprus-fish-classifier)
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?style=flat&logo=PyTorch&logoColor=white)](https://pytorch.org/)
 
