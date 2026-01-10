@@ -181,4 +181,6 @@ To start the server, run:
 ```
 
 ## To Do
+- [ ] ML Flow integration
+- [ ] Data and label shift detection integration 
 - [ ] Add a link to download raw data in the data folder
