@@ -35,6 +35,7 @@ def mock_config(tmp_path):
                 "class_names": ["fish_A", "fish_B", "fish_C"],
             },
             "model": {
+                "name": "fake_model",
                 "hf_repo_id": "fake/vit-model",
                 "revision": "hffake02",
                 "training_output_dir": "convnext-cyprus-fish-cls",
@@ -55,7 +56,9 @@ def mock_config(tmp_path):
                 "fp16": False,
                 "freeze_backbone": True,
                 "push_to_hub": False,
+                "experiment_name": "fake_name",
             },
+            "space_id": "fake_space_id",
         }
     )
     return cfg
