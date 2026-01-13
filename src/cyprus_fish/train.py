@@ -11,6 +11,7 @@ from sklearn.model_selection import StratifiedKFold
 from torch.utils.data import Subset
 from transformers import AutoModelForImageClassification, TrainingArguments, Trainer
 from huggingface_hub import HfApi, create_repo, upload_folder
+from mlflow.tracking import MlflowClient
 
 from src.cyprus_fish.data import CyprusFishDataset
 from src.cyprus_fish.utils import (
@@ -281,41 +282,30 @@ def train(cfg: DictConfig):
         with open(f"{save_path}/results.json", "w") as f:
             json.dump(test_results, f, indent=4)
 
-        # Save metrics on ML-Flow
+        # Save metrics on MLFlow
         mlflow.log_metrics(metrics)
 
-        # Look for the best current model
-        # Local experiment
-        tracker_file = f"{model_path}/best_model_tracker.json"
-        if os.path.exists(tracker_file):
-            with open(tracker_file, "r") as f:
-                data = json.load(f)
-                best_recorded_acc = data.get("test_accuracy", 0.0)
-        else:
-            best_recorded_acc = 0.0
-
-        # Dagshub/mlflow experiments
+        # Look for the best current model in dagshub/mlflow experiments
         _, best_acc_mlflow, _ = get_best_run_by_parameter(
             cfg.train.experiment_name,
             "metrics.test_accuracy",
             target_model_name=cfg.model.name,
         )
+
         if best_acc_mlflow is None:
             best_acc_mlflow = 0.0
-        print(best_acc_mlflow)
 
         current_acc = metrics["test_accuracy"]
 
         # Push the model to the HuggingFace Hub / Dagshub and restart the Space
-        if current_acc > best_recorded_acc and current_acc > best_acc_mlflow:
-            new_record = {
-                "test_accuracy": current_acc,
-                "local_model_path": save_path,
-                "date": datetime.now().isoformat(),
-            }
-            with open(tracker_file, "w") as f:
-                json.dump(new_record, f, indent=4)
-            mlflow.log_artifacts(save_path, artifact_path="model")
+        if current_acc > best_acc_mlflow:
+            print("[INFO] New best model, updating...")
+
+            # Log the new best model in MLFlow for versioning
+            reg_model_name = f"{cfg.model.name}"
+            model_info = mlflow.pytorch.log_model(
+                trainer.model, "model", registered_model_name=reg_model_name
+            )
 
             if cfg.train.push_to_hub:
                 if hf_token is not None:
@@ -327,16 +317,25 @@ def train(cfg: DictConfig):
                             token=hf_token,
                         )
 
+                        upload_folder(
+                            folder_path=save_path,
+                            repo_id=cfg.model.target_hf_repo_id,
+                            commit_message=f"Update weights, new test acc: {current_acc:.2%}",
+                            ignore_patterns=["README.md", ".git*"],
+                            token=hf_token,
+                        )
+
+                        # Put the model in production stage in MLFlow as deployed on Hugging Face
+                        client = MlflowClient()
+                        client.transition_model_version_stage(
+                            name=reg_model_name,
+                            version=model_info.registered_model_version,
+                            stage="Production",
+                            archive_existing_versions=True,
+                        )
+
                     except Exception as e:
                         print(f"Warning: {e}")
-
-                    upload_folder(
-                        folder_path=save_path,
-                        repo_id=cfg.model.target_hf_repo_id,
-                        commit_message=f"Update weights, new test acc: {current_acc:.2%}",
-                        ignore_patterns=["README.md", ".git*"],
-                        token=hf_token,
-                    )
 
                     # Restart the hf space
                     api = HfApi()
