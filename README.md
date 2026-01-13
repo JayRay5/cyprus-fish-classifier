@@ -197,7 +197,7 @@ The script evaluates the model on the test set and compares it against the curre
 
 1. Logged to DagsHub (MLflow) for versioning.
 
-2. Pushed to the Hugging Face Hub (if enabled in Hydra).
+2. Pushed to the Hugging Face Hub (if enabled in Hydra) for storage.
 
 3. Deployed by restarting the Hugging Face Space.
 
