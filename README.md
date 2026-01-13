@@ -93,6 +93,32 @@ The best version of the model is checked after each training, and the best one i
 5.  **Deployment:** The Docker container is automatically deployed to a Hugging Face Space running a `FastAPI` backend with a `Gradio` UI.
 
 ## 🧰 Tech Stack
+### 🛠️ Tech Stack
+
+### 🛠️ Tech Stack
+
+**Core & ML**
+![Python](https://img.shields.io/badge/python-3.11-blue?logo=python&logoColor=white)
+![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?logo=PyTorch&logoColor=white)
+![HuggingFace](https://img.shields.io/badge/%F0%9F%A4%97-Hugging%20Face-yellow)
+
+**MLOps & Config**
+![Hydra](https://img.shields.io/badge/Config-Hydra-89b8cd)
+![MLflow](https://img.shields.io/badge/MLflow-0194E2?logo=mlflow&logoColor=white)
+![DagsHub](https://img.shields.io/badge/Track-DagsHub-blue)
+
+**Serving**
+![FastAPI](https://img.shields.io/badge/FastAPI-005571?logo=fastapi)
+![Gradio](https://img.shields.io/badge/Gradio-Demo-orange)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?logo=docker&logoColor=white)
+
+**Quality & Environment**
+![Poetry](https://img.shields.io/badge/Poetry-%233B82F6.svg?logo=poetry&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF?logo=github-actions&logoColor=white)
+![Pytest](https://img.shields.io/badge/Tests-Pytest-0A9EDC?logo=pytest&logoColor=white)
+![Ruff](https://img.shields.io/badge/Linter-Ruff-black)
+![Bandit](https://img.shields.io/badge/Security-Bandit-black)
+![Pre-commit](https://img.shields.io/badge/Pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)
 
 - **Core:** Python 3.11, PyTorch, Transformers (Hugging Face), Datasets (Hugging Face)
 - **Package Management:** Poetry, Conda
