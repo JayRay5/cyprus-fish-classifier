@@ -349,7 +349,7 @@ def train(cfg: DictConfig):
                     if is_space_existing:
                         try:
                             api.restart_space(repo_id=space_id, token=hf_token)
-                            print("HF space restared with the new model")
+                            print("HF space restarted with the new model")
                         except Exception as e:
                             print(f"Error when restarting the space : {e}")
 

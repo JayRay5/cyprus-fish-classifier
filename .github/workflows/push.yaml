@@ -70,7 +70,7 @@ jobs:
         poetry install --no-interaction --no-root
 
     - name: Security Scan with Bandit
-      run: poetry run bandit -r src/ scripts/ -ll -ii
+      run:  bandit -r src/ scripts/ -ll -ii
 
     - name: Run Unit Tests 
       env:
