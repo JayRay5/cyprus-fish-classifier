@@ -118,6 +118,11 @@ Install dependencies
 conda create -n cyprus-fish-env python=3.11.5
 conda activate cyprus-fish-env
 ```
+You may need a HuggingFace token to push the best model to the hub and reload the space.<br>
+Then, add this token into your cyprus-fish-env virtual environment by running the following command:
+```bash
+conda env config vars set HF_TOKEN="your_token"
+```
 Install poetry and libs
 ```bash
 pip install poetry
@@ -181,4 +186,6 @@ To start the server, run:
 ```
 
 ## To Do
+- [ ] ML Flow integration
+- [ ] Data and label shift detection integration 
 - [ ] Add a link to download raw data in the data folder
