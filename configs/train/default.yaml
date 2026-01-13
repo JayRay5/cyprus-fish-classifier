@@ -1,7 +1,7 @@
 k_folds: 5
 batch_size: 32   
 grad_acc: 1
-epochs: 50
+epochs: 1
 lr: 3e-4
 warmup_steps: 0
 weight_decay: 0.01
@@ -12,3 +12,4 @@ device: "cuda"
 fp16: True
 freeze_backbone: True
 push_to_hub: True
+experiment_name: "Cyprus-Fish-Recognition" #set for dagshub/mlflow

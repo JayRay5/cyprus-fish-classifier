@@ -4,5 +4,5 @@ defaults:
   - prepare_data: cyprus_fish
   - data: cyprus_fish
   - model: convnext_tiny    
-  - train: default
-
+  - train: default 
+space_id: "JayRay5/Cyprus-Fish-Recognition-App"
