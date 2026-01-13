@@ -186,7 +186,7 @@ def train(cfg: DictConfig):
     hf_token = os.getenv("HF_TOKEN")
 
     if hf_token is None:
-        raise Warning("Warning : HF_Token not found in the env.")
+        print("Warning : HF_Token not found in the env.")
 
     mlflow.set_experiment(cfg.train.experiment_name)
     remote_server_uri = os.getenv("MLFLOW_TRACKING_URI")
