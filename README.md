@@ -189,12 +189,17 @@ poetry run kfold_training
 ```
 
 #### 2: Global training
-Once the hyperparameters are validated, you can run the following script to initiate training on the entire training set.
+Once hyperparameters are validated, run the following script to train on the full dataset:
 ```bash
 poetry run training
 ```
-The script will also evaluate the model on the test set. If there is another model already trained, it will compare the results with its own. If the new model is better, it will be pushed to the Hugging Face Hub according to the hydra config, save the model on dagshub (if a remote URL is present in environment variables), and restart the Hugging Face Space. 
+The script evaluates the model on the test set and compares it against the current best recorded performance. If the new model outperforms the previous one, it is automatically:
 
+1. Logged to DagsHub (MLflow) for versioning.
+
+2. Pushed to the Hugging Face Hub (if enabled in Hydra).
+
+3. Deployed by restarting the Hugging Face Space.
 
 ### 3. Application 
 You can change the model used in the application config in src/app/configs. <br>
