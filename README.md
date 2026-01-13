@@ -87,7 +87,7 @@ This repository contains the complete pipeline: from data preparation and model 
 The project follows a robust MLOps pipeline:
 1. **Data**: As the number of samples is small (<60 per class), the dataset is split into a train and a test set. The resulting dataset is hosted on Hugging Face Hub ([dataset](https://huggingface.co/datasets/JayRay5/cyprus-fish-dataset)).
 2.  **Model:** The model is based on [**ConvNext Tiny**](https://arxiv.org/pdf/2201.03545). It is hosted and versioned on Hugging Face Hub.
-3.  **Training:** The training pipeline uses k-fold validation and then a full finetuning on the training set once the hyperparameters are fixed. The Fine-tuning uses `PyTorch` and `Hydra` for configuration management. The training pipeline is achieved using the Hugging Face Trainer. <br>
+3.  **Training:** The training pipeline uses k-fold validation and then a full finetuning on the training set once the hyperparameters are fixed. The Fine-tuning uses `PyTorch` and `Hydra` for configuration management. The training pipeline is achieved using the Hugging Face Trainer. Experiments metrics are followed using `MLflow`<br>
 The best version of the model is checked after each training, and the best one is pushed on [HuggingFace](https://huggingface.co/JayRay5/convnext-tiny-224-cyprus-fish-cls).
 4.  **CI/CD:** GitHub Actions pipeline that runs tests (`pytest`), security checks, builds the Docker image, and pushes it to GHCR.
 5.  **Deployment:** The Docker container is automatically deployed to a Hugging Face Space running a `FastAPI` backend with a `Gradio` UI.
@@ -123,9 +123,15 @@ Then, add this token into your cyprus-fish-env virtual environment by running th
 ```bash
 conda env config vars set HF_TOKEN="your_token"
 ```
+To use ml-flow on [dagshub](https://dagshub.com/) to see experiment results on the web, you can do:
+```bash
+conda env config vars set MLFLOW_TRACKING_URI="https://dagshub.com/your_user_name/your_repo.mlflow"
+conda env config vars set MLFLOW_TRACKING_USERNAME="your_user_name"
+conda env config vars set MLFLOW_TRACKING_PASSWORD="your_dagshub_token"
+```
 Install poetry and libs
 ```bash
-pip install poetry
+pip install poetry==2.2.1
 poetry config virtualenvs.create false # install libs in the conda env
 poetry install 
 ```
@@ -161,7 +167,7 @@ poetry run python -m src.scripts.upload_dataset
 
 ### 2. Training 
 The training hyperparameters can be set using hydra in the config folder. <br>
-The experiments are saved in an experiments folder. <br>
+The experiments are saved in an experiments folder. The training scripts load metrics and best models using MLflow to ensure easy analysis of results across experiments.  <br>
 As there is a small number of samples, the training pipeline is split into two stages:
 
 #### 1: K-fold cross-validation
@@ -171,11 +177,11 @@ poetry run kfold_training
 ```
 
 #### 2: Global training
-Once the hyperparameters are validated, you can run the following script to start the training on the whole training set.
+Once the hyperparameters are validated, you can run the following script to initiate training on the entire training set.
 ```bash
 poetry run training
 ```
-The script will also evaluate the model on the test set. If there is another model already trained, it will compare the results with its own. If the new model is better, it will be pushed to the Hugging Face Hub according to the hydra config. 
+The script will also evaluate the model on the test set. If there is another model already trained, it will compare the results with its own. If the new model is better, it will be pushed to the Hugging Face Hub according to the hydra config, save the model on dagshub (if a remote URL is present in environment variables), and restart the Hugging Face Space. 
 
 
 ### 3. Application 
