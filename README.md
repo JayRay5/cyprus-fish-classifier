@@ -2,8 +2,7 @@
 
 [![Hugging Face Space](https://img.shields.io/badge/🤗%20Hugging%20Face-Space-yellow)](https://huggingface.co/spaces/JayRay5/Cyprus-Fish-Recognition-App)
 [![Docker Image](https://img.shields.io/badge/docker-ghcr.io-blue)](https://github.com/JayRay5/cyprus-fish-classifier/pkgs/container/cyprus-fish-classifier)
-[![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/)
-[![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?style=flat&logo=PyTorch&logoColor=white)](https://pytorch.org/)
+
 
 An end-to-end MLOps project for classifying fish species from Cyprus using Deep Learning. <br>
 This project covers 5 species:
@@ -55,7 +54,7 @@ This repository contains the complete pipeline: from data preparation and model 
 │       └── test_docker.yaml   # Build the image of the App and deploy it to Hugging Face Space
 ├── configs                    # Hydra config files for dataset, model, and training hyperparameters
 ├── data                       # Raw data
-├── experiments                # Folder to store experiment results (k-fold cross-validation and global training)
+├── experiments                # Output directory for the Hugging Face Trainer
 ├── scripts
 |   ├── prepare_data.py        # Split raw data into train and test
 |   └── upload_dataset.py      # Upload to the Hugging Face Hub
@@ -86,23 +85,36 @@ This repository contains the complete pipeline: from data preparation and model 
 
 The project follows a robust MLOps pipeline:
 1. **Data**: As the number of samples is small (<60 per class), the dataset is split into a train and a test set. The resulting dataset is hosted on Hugging Face Hub ([dataset](https://huggingface.co/datasets/JayRay5/cyprus-fish-dataset)).
-2.  **Model:** The model is based on [**ConvNext Tiny**](https://arxiv.org/pdf/2201.03545). It is hosted and versioned on Hugging Face Hub.
-3.  **Training:** The training pipeline uses k-fold validation and then a full finetuning on the training set once the hyperparameters are fixed. The Fine-tuning uses `PyTorch` and `Hydra` for configuration management. The training pipeline is achieved using the Hugging Face Trainer. <br>
-The best version of the model is checked after each training, and the best one is pushed on [HuggingFace](https://huggingface.co/JayRay5/convnext-tiny-224-cyprus-fish-cls).
+2.  **Model:** The model is based on [**ConvNeXt Tiny**](https://arxiv.org/pdf/2201.03545). The final model weights are hosted on Hugging Face Hub, while experiment tracking and versioning are managed via `MLflow`.
+3.  **Training:** The training pipeline uses k-fold validation and then a full finetuning on the training set once the hyperparameters are fixed. The Fine-tuning uses `PyTorch` and `Hydra` for configuration management. The training pipeline is achieved using the Hugging Face Trainer. Experiments metrics are followed using `MLflow`<br>
+The best version of the model is checked after each global training, and the best one among MLFlow and local experiments is pushed on [HuggingFace](https://huggingface.co/JayRay5/convnext-tiny-224-cyprus-fish-cls).
 4.  **CI/CD:** GitHub Actions pipeline that runs tests (`pytest`), security checks, builds the Docker image, and pushes it to GHCR.
 5.  **Deployment:** The Docker container is automatically deployed to a Hugging Face Space running a `FastAPI` backend with a `Gradio` UI.
 
 ## 🧰 Tech Stack
 
-- **Core:** Python 3.11, PyTorch, Transformers (Hugging Face), Datasets (Hugging Face)
-- **Package Management:** Poetry, Conda
-- **Configuration using Hydra:** In the config folder, you can use another dataset from Hugging Face hub, change the model backbone, and set up training hyperparameters
-- **Serving:** FastAPI, Uvicorn, Gradio, Docker
-- **Quality & Security:**
-    - `Ruff` (Linting & Formatting)
-    - `Bandit` (Security analysis)
-    - `Pytest` (Unit testing)
-    - `Pre-commit` (Git hooks)
+**Core & ML** <br>
+![Python](https://img.shields.io/badge/python-3.11-blue?logo=python&logoColor=white)
+![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?logo=PyTorch&logoColor=white)
+![HuggingFace](https://img.shields.io/badge/%F0%9F%A4%97-Hugging%20Face-yellow)
+
+**MLOps & Config** <br>
+![Hydra](https://img.shields.io/badge/Config-Hydra-89b8cd)
+![MLflow](https://img.shields.io/badge/MLflow-0194E2?logo=mlflow&logoColor=white)
+![DagsHub](https://img.shields.io/badge/Track-DagsHub-blue)
+
+**Serving**<br>
+![FastAPI](https://img.shields.io/badge/FastAPI-005571?logo=fastapi)
+![Gradio](https://img.shields.io/badge/Gradio-Demo-orange)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?logo=docker&logoColor=white)
+
+**Quality Assurance (QA) & Environment**<br>
+![Poetry](https://img.shields.io/badge/Poetry-%233B82F6.svg?logo=poetry&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF?logo=github-actions&logoColor=white)
+![Pytest](https://img.shields.io/badge/Tests-Pytest-0A9EDC?logo=pytest&logoColor=white)
+![Ruff](https://img.shields.io/badge/Linter-Ruff-black)
+![Bandit](https://img.shields.io/badge/Security-Bandit-black)
+![Pre-commit](https://img.shields.io/badge/Pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)
 
 ---
 
@@ -123,9 +135,15 @@ Then, add this token into your cyprus-fish-env virtual environment by running th
 ```bash
 conda env config vars set HF_TOKEN="your_token"
 ```
+To use ml-flow on [dagshub](https://dagshub.com/) to see experiment results on the web, you can do:
+```bash
+conda env config vars set MLFLOW_TRACKING_URI="https://dagshub.com/your_user_name/your_repo.mlflow"
+conda env config vars set MLFLOW_TRACKING_USERNAME="your_user_name"
+conda env config vars set MLFLOW_TRACKING_PASSWORD="your_dagshub_token"
+```
 Install poetry and libs
 ```bash
-pip install poetry
+pip install poetry==2.2.1
 poetry config virtualenvs.create false # install libs in the conda env
 poetry install 
 ```
@@ -160,8 +178,8 @@ poetry run python -m src.scripts.upload_dataset
 ```
 
 ### 2. Training 
-The training hyperparameters can be set using hydra in the config folder. <br>
-The experiments are saved in an experiments folder. <br>
+The training hyperparameters, model, and dataset can be set using hydra in the config folder. <br>
+The experiments are saved in an experiments folder. The training scripts load metrics and best models using MLflow to ensure easy analysis of results across experiments.  <br>
 As there is a small number of samples, the training pipeline is split into two stages:
 
 #### 1: K-fold cross-validation
@@ -171,12 +189,17 @@ poetry run kfold_training
 ```
 
 #### 2: Global training
-Once the hyperparameters are validated, you can run the following script to start the training on the whole training set.
+Once hyperparameters are validated, run the following script to train on the full dataset:
 ```bash
 poetry run training
 ```
-The script will also evaluate the model on the test set. If there is another model already trained, it will compare the results with its own. If the new model is better, it will be pushed to the Hugging Face Hub according to the hydra config. 
+The script evaluates the model on the test set and compares it against the current best recorded performance. If the new model outperforms the previous one, it is automatically:
 
+1. Logged to DagsHub (MLflow) for versioning.
+
+2. Pushed to the Hugging Face Hub (if enabled in Hydra) for storage.
+
+3. Deployed by restarting the Hugging Face Space.
 
 ### 3. Application 
 You can change the model used in the application config in src/app/configs. <br>
@@ -186,6 +209,5 @@ To start the server, run:
 ```
 
 ## To Do
-- [ ] ML Flow integration
-- [ ] Data and label shift detection integration 
+- [ ] Data shift detection integration 
 - [ ] Add a link to download raw data in the data folder
