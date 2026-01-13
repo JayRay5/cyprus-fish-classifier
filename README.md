@@ -2,8 +2,7 @@
 
 [![Hugging Face Space](https://img.shields.io/badge/🤗%20Hugging%20Face-Space-yellow)](https://huggingface.co/spaces/JayRay5/Cyprus-Fish-Recognition-App)
 [![Docker Image](https://img.shields.io/badge/docker-ghcr.io-blue)](https://github.com/JayRay5/cyprus-fish-classifier/pkgs/container/cyprus-fish-classifier)
-[![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/)
-[![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?style=flat&logo=PyTorch&logoColor=white)](https://pytorch.org/)
+
 
 An end-to-end MLOps project for classifying fish species from Cyprus using Deep Learning. <br>
 This project covers 5 species:
@@ -93,26 +92,23 @@ The best version of the model is checked after each training, and the best one i
 5.  **Deployment:** The Docker container is automatically deployed to a Hugging Face Space running a `FastAPI` backend with a `Gradio` UI.
 
 ## 🧰 Tech Stack
-### 🛠️ Tech Stack
 
-### 🛠️ Tech Stack
-
-**Core & ML**
+**Core & ML** <br>
 ![Python](https://img.shields.io/badge/python-3.11-blue?logo=python&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?logo=PyTorch&logoColor=white)
 ![HuggingFace](https://img.shields.io/badge/%F0%9F%A4%97-Hugging%20Face-yellow)
 
-**MLOps & Config**
+**MLOps & Config** <br>
 ![Hydra](https://img.shields.io/badge/Config-Hydra-89b8cd)
 ![MLflow](https://img.shields.io/badge/MLflow-0194E2?logo=mlflow&logoColor=white)
 ![DagsHub](https://img.shields.io/badge/Track-DagsHub-blue)
 
-**Serving**
+**Serving**<br>
 ![FastAPI](https://img.shields.io/badge/FastAPI-005571?logo=fastapi)
 ![Gradio](https://img.shields.io/badge/Gradio-Demo-orange)
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?logo=docker&logoColor=white)
 
-**Quality & Environment**
+**Quality Assurance (QA) & Environment**<br>
 ![Poetry](https://img.shields.io/badge/Poetry-%233B82F6.svg?logo=poetry&logoColor=white)
 ![GitHub Actions](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF?logo=github-actions&logoColor=white)
 ![Pytest](https://img.shields.io/badge/Tests-Pytest-0A9EDC?logo=pytest&logoColor=white)
