@@ -85,7 +85,7 @@ This repository contains the complete pipeline: from data preparation and model 
 
 The project follows a robust MLOps pipeline:
 1. **Data**: As the number of samples is small (<60 per class), the dataset is split into a train and a test set. The resulting dataset is hosted on Hugging Face Hub ([dataset](https://huggingface.co/datasets/JayRay5/cyprus-fish-dataset)).
-2.  **Model:** The model is based on [**ConvNeXt Tiny**](https://arxiv.org/pdf/2201.03545). The final model weights are hosted on Hugging Face Hub, while experiment tracking and versioning are managed via MLflow.
+2.  **Model:** The model is based on [**ConvNeXt Tiny**](https://arxiv.org/pdf/2201.03545). The final model weights are hosted on Hugging Face Hub, while experiment tracking and versioning are managed via `MLflow`.
 3.  **Training:** The training pipeline uses k-fold validation and then a full finetuning on the training set once the hyperparameters are fixed. The Fine-tuning uses `PyTorch` and `Hydra` for configuration management. The training pipeline is achieved using the Hugging Face Trainer. Experiments metrics are followed using `MLflow`<br>
 The best version of the model is checked after each global training, and the best one among MLFlow and local experiments is pushed on [HuggingFace](https://huggingface.co/JayRay5/convnext-tiny-224-cyprus-fish-cls).
 4.  **CI/CD:** GitHub Actions pipeline that runs tests (`pytest`), security checks, builds the Docker image, and pushes it to GHCR.
