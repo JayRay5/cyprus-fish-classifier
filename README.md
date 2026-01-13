@@ -85,7 +85,7 @@ This repository contains the complete pipeline: from data preparation and model 
 
 The project follows a robust MLOps pipeline:
 1. **Data**: As the number of samples is small (<60 per class), the dataset is split into a train and a test set. The resulting dataset is hosted on Hugging Face Hub ([dataset](https://huggingface.co/datasets/JayRay5/cyprus-fish-dataset)).
-2.  **Model:** The model is based on [**ConvNext Tiny**](https://arxiv.org/pdf/2201.03545). It is hosted and versioned on Hugging Face Hub.
+2.  **Model:** The model is based on [**ConvNeXt Tiny**](https://arxiv.org/pdf/2201.03545). The final model weights are hosted on Hugging Face Hub, while experiment tracking and versioning are managed via MLflow.
 3.  **Training:** The training pipeline uses k-fold validation and then a full finetuning on the training set once the hyperparameters are fixed. The Fine-tuning uses `PyTorch` and `Hydra` for configuration management. The training pipeline is achieved using the Hugging Face Trainer. Experiments metrics are followed using `MLflow`<br>
 The best version of the model is checked after each global training, and the best one among MLFlow and local experiments is pushed on [HuggingFace](https://huggingface.co/JayRay5/convnext-tiny-224-cyprus-fish-cls).
 4.  **CI/CD:** GitHub Actions pipeline that runs tests (`pytest`), security checks, builds the Docker image, and pushes it to GHCR.
@@ -115,16 +115,6 @@ The best version of the model is checked after each global training, and the bes
 ![Ruff](https://img.shields.io/badge/Linter-Ruff-black)
 ![Bandit](https://img.shields.io/badge/Security-Bandit-black)
 ![Pre-commit](https://img.shields.io/badge/Pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)
-
-- **Core:** Python 3.11, PyTorch, Transformers (Hugging Face), Datasets (Hugging Face)
-- **Package Management:** Poetry, Conda
-- **Configuration using Hydra:** In the config folder, you can use another dataset from Hugging Face hub, change the model backbone, and set up training hyperparameters
-- **Serving:** FastAPI, Uvicorn, Gradio, Docker
-- **Quality & Security:**
-    - `Ruff` (Linting & Formatting)
-    - `Bandit` (Security analysis)
-    - `Pytest` (Unit testing)
-    - `Pre-commit` (Git hooks)
 
 ---
 
@@ -188,7 +178,7 @@ poetry run python -m src.scripts.upload_dataset
 ```
 
 ### 2. Training 
-The training hyperparameters can be set using hydra in the config folder. <br>
+The training hyperparameters, model, and dataset can be set using hydra in the config folder. <br>
 The experiments are saved in an experiments folder. The training scripts load metrics and best models using MLflow to ensure easy analysis of results across experiments.  <br>
 As there is a small number of samples, the training pipeline is split into two stages:
 
@@ -215,5 +205,5 @@ To start the server, run:
 
 ## To Do
 - [ ] ML Flow integration
-- [ ] Data and label shift detection integration 
+- [ ] Data shift detection integration 
 - [ ] Add a link to download raw data in the data folder
