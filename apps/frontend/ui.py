@@ -5,8 +5,10 @@ import requests
 # The Azure API URL will be injected via Hugging Face Secrets
 # For local testing, you can use "http://127.0.0.1:8000"
 API_URL = os.environ.get("API_URL", "http://127.0.0.1:8000")
-github_repo_url = "YOUR_GITHUB_LINK_HERE"
-huggingface_repo_url = "YOUR_HF_LINK_HERE"
+github_repo_url = "https://github.com/JayRay5/cyprus-fish-classifier/tree/main"
+huggingface_repo_url = (
+    "https://huggingface.co/JayRay5/convnext-tiny-224-cyprus-fish-cls"
+)
 samples_path = os.environ.get("UI_SAMPLE_PATH", "./assets/samples")
 
 
