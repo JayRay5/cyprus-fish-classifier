@@ -19,7 +19,8 @@ artifacts/*.pth
 wandb/          # Logs Weights & Biases
 *.safetensors
 experiments/
-
+*.onnx
+onnx_dir/*
 #TMP files
 *.out
 *.ipynb
