@@ -3,28 +3,32 @@ import numpy as np
 
 def predict_image(image, processor, model):
     """
-    Prédit l'espèce du poisson en utilisant le modèle ONNX et Numpy.
+    Predict fish species using the model (ONNX or PyTorch) and NumPy.
     """
-    # 1. Préparer l'image et demander des tableaux Numpy ("np") au lieu de PyTorch ("pt")
+    # 1. Prepare image inputs as NumPy arrays
     inputs = processor(images=image, return_tensors="np")
 
-    # 2. Inférence ONNX
+    # 2. Model inference
     outputs = model(**inputs)
-    logits = outputs.logits[0]  # Récupérer le premier (et unique) résultat du batch
+    logits = outputs.logits[0]
 
-    # 3. Calculer le Softmax manuellement avec Numpy
-    # L'astuce "logits - np.max(logits)" évite les erreurs d'overflow
+    # 3. MLOps fallback: Convert PyTorch tensor to NumPy array if returned (e.g., during unit tests)
+    if hasattr(logits, "detach"):
+        logits = logits.detach().cpu().numpy()
+    else:
+        logits = np.asarray(logits)
+
+    # 4. Compute stable softmax using NumPy
     exp_logits = np.exp(logits - np.max(logits))
     probabilities = exp_logits / exp_logits.sum()
 
-    # 4. Formater les résultats avec id2label
+    # 5. Format results using model id2label configuration
     results = {}
     for idx, prob in enumerate(probabilities):
         label_name = model.config.id2label[idx]
-        # On convertit le float32 de numpy en float natif Python avec .item()
         results[label_name] = float(prob.item())
 
-    # Optionnel : Trier pour renvoyer les plus probables en premier
+    # 6. Sort results by probability in descending order
     sorted_results = dict(
         sorted(results.items(), key=lambda item: item[1], reverse=True)
     )
