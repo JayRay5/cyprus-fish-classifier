@@ -1,8 +1,7 @@
 name: Build and Push Docker Image to GHCR
 
 on:
-  push:
-    branches: [ "azure_migration", "main" ]
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
