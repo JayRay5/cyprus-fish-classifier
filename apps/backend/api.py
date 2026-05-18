@@ -1,26 +1,27 @@
 import io
+import os
 import torch
 import uvicorn
 import asyncio
-import gradio as gr
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.concurrency import run_in_threadpool
 from transformers import AutoImageProcessor, AutoModelForImageClassification
 from PIL import Image
+
 from .config import settings
 from .utils import predict_image
-from .ui import create_ui
-
 
 constants = {}
-model_lock = asyncio.Lock()
+model_lock = asyncio.Lock()  # mutex for the model use (1 at a time)
 
 
+# load constant as model and processor when te server start (asynccontextmanager permet de )
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
-    Init & Load model/processor
+    Init & Load model/processor directly from Hugging Face Hub (Runtime Pull)
     """
     device = "cuda" if torch.cuda.is_available() else "cpu"
     try:
@@ -34,7 +35,7 @@ async def lifespan(app: FastAPI):
 
         constants["device"] = constants["model"].device
 
-        print("[INFO] Model & Processor loaded. [INFO]")
+        print(f"[INFO] Model & Processor loaded on {device}. [INFO]")
 
     except Exception as e:
         print(f"Error Message : {e}")
@@ -53,6 +54,17 @@ app = FastAPI(
     description="API for classifying fish species using ConvNext Tiny",
     version="1.0.0",
     lifespan=lifespan,
+)
+
+# --- Configuration CORS (Indispensable pour une API publique/découplée) ---
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "*"
+    ],  # En production, on mettrait l'URL exacte du Space Hugging Face
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # --- ENDPOINTS ---
@@ -81,18 +93,12 @@ def model_device_check():
 
 @app.post("/recognize")
 async def recognize(file: UploadFile = File(...)):
-    if "model" not in constants:
-        raise HTTPException(status_code=503, detail="Model not found.")
-
-    if "processor" not in constants:
-        raise HTTPException(status_code=503, detail="Processor not found.")
-
-    if "device" not in constants:
-        raise HTTPException(status_code=503, detail="Device not found.")
+    if "model" not in constants or "processor" not in constants:
+        raise HTTPException(status_code=503, detail="Model or Processor not found.")
 
     if file.content_type not in ["image/jpeg", "image/png", "image/webp"]:
         raise HTTPException(
-            status_code=400, detail="Unsupported format, require JPG or PNG."
+            status_code=400, detail="Unsupported format, require JPG, WEBP, or PNG."
         )
 
     try:
@@ -102,7 +108,7 @@ async def recognize(file: UploadFile = File(...)):
         model = constants["model"]
         processor = constants["processor"]
 
-        # authorize one thread at a time
+        # authorize one thread at a time (Excellent for CPU deployment)
         async with model_lock:
             results = await run_in_threadpool(predict_image, image, processor, model)
 
@@ -113,13 +119,12 @@ async def recognize(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-interface = create_ui(model_context=constants, model_lock=model_lock)
-
-app = gr.mount_gradio_app(app, interface, path="/")
-
-
+# Le script de démarrage (ajusté sur le port 8000 par défaut pour les API web)
 def start():
-    uvicorn.run("src.app.api:app", host="0.0.0.0", port=7860, reload=True)  # nosec B104 (to ignore the bandit alert)
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(
+        "backend.api:app", host="0.0.0.0", port=port, reload=False
+    )  # Reload=False en prod
 
 
 if __name__ == "__main__":
