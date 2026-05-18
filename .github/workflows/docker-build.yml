@@ -36,7 +36,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./Dockerfile
+          file: ./apps/backend/Dockerfile
           push: true
           # first tag required for terraform, second is to know the commit version and the branch 
           tags: |
