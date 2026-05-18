@@ -1,16 +1,16 @@
 [project]
 name = "cyprus-fish"
 version = "0.1.0"
-description = ""
+description = "Classification model for Cyprus fish species"
 authors = [
     {name = "Rayane Bencharef"}
 ]
 readme = "README.md"
 requires-python = ">=3.11,<3.13"
+
+# --- DÉPENDANCES PRINCIPALES (LE BACKEND AZURE) ---
+# Uniquement ce dont le conteneur Docker a besoin pour exécuter FastAPI et PyTorch
 dependencies = [
-    "hydra-core (>=1.3.2,<2.0.0)",
-    "omegaconf (>=2.3.0,<3.0.0)",
-    "datasets (>=4.4.2,<5.0.0)",
     "pillow (>=12.0.0,<13.0.0)",
     "torch (>=2.9.1,<3.0.0)",
     "torchvision (>=0.24.1,<0.25.0)",
@@ -19,11 +19,9 @@ dependencies = [
     "uvicorn (>=0.40.0,<0.41.0)",
     "fastapi (>=0.128.0,<0.129.0)",
     "python-multipart (>=0.0.21,<0.0.22)",
-    "gradio (>=6.2.0,<7.0.0)",
-    "mlflow (>=3.8.1,<4.0.0)",
-    "python-dotenv (>=1.2.1,<2.0.0)"
+    "python-dotenv (>=1.2.1,<2.0.0)",
+    "huggingface-hub (>=0.24.0,<1.0)"
 ]
-
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
@@ -33,23 +31,45 @@ build-backend = "poetry.core.masonry.api"
 packages = [
     { include = "cyprus_fish", from = "src" }
 ]
+
 [tool.pytest.ini_options]
 pythonpath = "."
 testpaths = ["tests"]
 
+# --- GROUPES DE DÉPENDANCES ISOLÉS ---
+
 [dependency-groups]
-dev = [
-    "ruff (>=0.14.10,<0.15.0)",
-    "bandit (>=1.9.2,<2.0.0)",
-    "pytest (>=9.0.2,<10.0.0)",
-    "pre-commit (>=4.5.1,<5.0.0)",
+
+# Dépendances pour l'interface Hugging Face
+frontend = [
+    "gradio (>=6.2.0,<7.0.0)",
+    "requests (>=2.31.0,<3.0.0)"
+]
+
+# Dépendances pour l'entraînement et l'expérimentation (ConvNext)
+training = [
+    "hydra-core (>=1.3.2,<2.0.0)",
+    "omegaconf (>=2.3.0,<3.0.0)",
+    "datasets (>=4.4.2,<5.0.0)",
+    "mlflow (>=3.8.1,<4.0.0)",
     "tqdm (>=4.67.1,<5.0.0)",
     "evaluate (>=0.4.6,<0.5.0)",
     "scikit-learn (>=1.8.0,<2.0.0)",
     "accelerate (>=1.12.0,<2.0.0)"
 ]
 
+# Dépendances pour le linting, le formatage et les tests
+dev = [
+    "ruff (>=0.14.10,<0.15.0)",
+    "bandit (>=1.9.2,<2.0.0)",
+    "pytest (>=9.0.2,<10.0.0)",
+    "pre-commit (>=4.5.1,<5.0.0)",
+    "optimum[exporters] (>=2.1.0,<3.0.0)"
+]
+
 [tool.poetry.scripts]
 kfold_training = "src.cyprus_fish.train:train_k_fold"
 training = "src.cyprus_fish.train:train"
-application_start = "src.app.api:start"
+convert-onnx = "scripts.convert_to_onnx:main"
+run-back = "apps.backend.api:start"
+run-front = "apps.frontend.ui:start"

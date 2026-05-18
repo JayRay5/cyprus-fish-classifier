@@ -7,7 +7,7 @@ import requests
 API_URL = os.environ.get("API_URL", "http://127.0.0.1:8000")
 github_repo_url = "YOUR_GITHUB_LINK_HERE"
 huggingface_repo_url = "YOUR_HF_LINK_HERE"
-samples_path = "./assets/samples"
+samples_path = os.environ.get("UI_SAMPLE_PATH", "./assets/samples")
 
 
 def predict_from_api(image_filepath):
@@ -21,9 +21,9 @@ def predict_from_api(image_filepath):
 
     try:
         with open(image_filepath, "rb") as f:
-            files = {"file": (os.path.basename(image_filepath), f, "image/jpeg")}
+            file = {"file": (os.path.basename(image_filepath), f, "image/jpeg")}
 
-            response = requests.post(endpoint, files=files, timeout=30)
+            response = requests.post(endpoint, files=file, timeout=30)
 
         response.raise_for_status()
         results = response.json()
@@ -152,5 +152,10 @@ with gr.Blocks(theme=theme, title="Cyprus Fish AI") as demo:
 
     clear_btn.click(lambda: (None, None), outputs=[input_image, output_plot])
 
-if __name__ == "__main__":
+
+def start():
     demo.launch(server_name="0.0.0.0", server_port=7860)
+
+
+if __name__ == "__main__":
+    start()

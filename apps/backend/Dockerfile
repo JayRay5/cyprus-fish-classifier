@@ -1,55 +1,40 @@
-# Create the requirements.txt to download dependencies from poetry
-FROM python:3.11 as builder
-
-RUN pip install poetry poetry-plugin-export
-
-WORKDIR /tmp
-
-COPY pyproject.toml poetry.lock ./
-
-RUN poetry export -f requirements.txt --output requirements.txt --without-hashes --only main
-
-
-# 1. Base Docker Image (contains linux and a small python version)
+# 1. Ultra-light base image compatible with Python 3.11
 FROM python:3.11-slim
 
-# 2. Env variables optimize for python
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    PATH="/home/appuser/.local/bin:$PATH"
+# 2. Optimize Python, Poetry (v2.x) and Hugging Face environments
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    POETRY_VERSION=2.0.1 \
+    POETRY_VIRTUALENVS_CREATE=false \
+    HF_HOME=/tmp/hf_cache
 
-# 3. Install system dependencies
-#RUN apt-get update && apt-get install -y \
-#    curl \
-#    libgl1 \
-#    libglib2.0-0 \
-#    && rm -rf /var/lib/apt/lists/*
+# 3. Install minimal system dependencies required for image processing (Pillow)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
 
-# 4. Define a new user (to avoid the use of root)
-RUN useradd -m -u 1000 appuser
-
-# 5. Define a subfolder
+# 4. Set the working directory inside the container
 WORKDIR /app
-RUN chown appuser:appuser /app
 
-# 6. Go to the created user
-USER appuser
+# 5. Install the exact version of Poetry
+RUN pip install "poetry==$POETRY_VERSION"
 
-# 7. Install Python dependencies 
-COPY --from=builder /tmp/requirements.txt .
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+# 6. Optimization Layer: Copy ONLY dependency configurations first
+# This ensures Docker caches the heavy library installations (optimum, fastapi).
+# If you edit your API code later, Docker will skip this slow step entirely.
+COPY pyproject.toml poetry.lock* ./
 
-# 8. Copy the other part of the files
-COPY --chown=appuser:appuser . .
+# 7. Install ONLY the production backend dependencies (ignores dev, training, frontend)
+RUN poetry install --only main --no-interaction --no-ansi --no-root
 
-#RUN echo "Je suis ici :" && pwd && echo "Voici les fichiers :" && ls -laR
+# 8. Production Isolation: Copy ONLY the backend API folder.
+# The 'src/' folder (training logic) is deliberately ignored to keep the image pure.
+COPY apps/backend/ ./apps/backend/
 
-# 9. Add permission
-RUN chmod +x ./src/app/start.sh 
+# 9. Expose the default FastAPI port
+EXPOSE 8000
 
-# 10. 
-EXPOSE 7860
-
-# 11. Start
-CMD ["./src/app/start.sh"]
+# 10. Official startup command for Azure App Service
+# Uvicorn looks for the "app" instance inside apps/backend/api.py
+CMD ["uvicorn", "apps.backend.api:app", "--host", "0.0.0.0", "--port", "8000"]

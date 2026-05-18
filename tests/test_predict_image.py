@@ -1,5 +1,5 @@
 from pytest import approx
-from src.app.utils import predict_image
+from apps.backend.utils import predict_image
 
 
 def test_predict_image_structure_and_values(mock_config, mock_external_deps):

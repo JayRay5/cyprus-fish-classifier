@@ -1,31 +1,32 @@
-import torch
-
-from transformers import PreTrainedModel, AutoImageProcessor
-from PIL import Image
+import numpy as np
 
 
-def predict_image(
-    image: Image.Image, processor: AutoImageProcessor, model: PreTrainedModel
-):
+def predict_image(image, processor, model):
     """
-    Take the image, processor and model -> return the probabilities of the input image for each classes
+    Prédit l'espèce du poisson en utilisant le modèle ONNX et Numpy.
     """
-    inputs = (
-        processor(images=image, return_tensors="pt").to(model.device).to(model.dtype)
+    # 1. Préparer l'image et demander des tableaux Numpy ("np") au lieu de PyTorch ("pt")
+    inputs = processor(images=image, return_tensors="np")
+
+    # 2. Inférence ONNX
+    outputs = model(**inputs)
+    logits = outputs.logits[0]  # Récupérer le premier (et unique) résultat du batch
+
+    # 3. Calculer le Softmax manuellement avec Numpy
+    # L'astuce "logits - np.max(logits)" évite les erreurs d'overflow
+    exp_logits = np.exp(logits - np.max(logits))
+    probabilities = exp_logits / exp_logits.sum()
+
+    # 4. Formater les résultats avec id2label
+    results = {}
+    for idx, prob in enumerate(probabilities):
+        label_name = model.config.id2label[idx]
+        # On convertit le float32 de numpy en float natif Python avec .item()
+        results[label_name] = float(prob.item())
+
+    # Optionnel : Trier pour renvoyer les plus probables en premier
+    sorted_results = dict(
+        sorted(results.items(), key=lambda item: item[1], reverse=True)
     )
 
-    with torch.inference_mode():
-        outputs = model(**inputs)
-
-    probs = torch.nn.functional.softmax(outputs.logits, dim=-1)[0]
-
-    id2label = model.config.id2label
-    results = {}
-
-    for idx, prob in enumerate(probs):
-        idx_int = idx
-        label_name = id2label[idx_int]
-
-        results[label_name] = float(prob)
-
-    return results
+    return sorted_results
