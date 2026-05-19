@@ -3,7 +3,7 @@
 [![Hugging Face Space](https://img.shields.io/badge/🤗%20Hugging%20Face-Space-yellow)](https://huggingface.co/spaces/JayRay5/Cyprus-Fish-Recognition-App)
 [![Docker Image](https://img.shields.io/badge/docker-ghcr.io-blue)](https://github.com/JayRay5/cyprus-fish-classifier/pkgs/container/cyprus-fish-classifier)
 
-
+This branch was used to learn how to deploy on Azure using Terraform and Docker. The server does not run anymore, the public version on  [Hugging Face Space](https://img.shields.io/badge/🤗%20Hugging%20Face-Space-yellow)](https://huggingface.co/spaces/JayRay5/Cyprus-Fish-Recognition-App) is the version on the main branch with a full-stack container app that. 
 An end-to-end MLOps project for classifying fish species from Cyprus using Deep Learning. <br>
 This project covers 5 species:
 <div align="center">
@@ -50,23 +50,31 @@ This repository contains the complete pipeline: from data preparation and model 
 .
 ├── .github
 │   └── workflows
-|       ├── push.yaml          # Check security (bandit), format (ruff), test (pytest), and deploy at each push on main
-│       └── test_docker.yaml   # Build the image of the App and deploy it to Hugging Face Space
+|       ├── api-docker-build.yml  # Build and push the Backend Container to GHCR
+|       ├── deploy-frontend.yml   # Deploy the gradio interfance on Hugging Face Spaces
+│       └── terraform-cd.yml      # Configure and Build the ACI (Azure Container Instances)
+├── apps
+│   ├── backend  
+│   │   ├── api.py             # FastAPI 
+│   │   ├── config.py          # Settings
+|   |   ├── Dockerfile         # Docker file use to create the backend api container
+│   │   └── utils.py
+|   └── backend  
+│       ├── app.py             # FastAPI 
+│       ├── config.py          # Settings
+|       ├── README.md          # README file for the configuration of HF Space (gradio template)
+│       └── requirements.txt   # Libs to init the requirements.txt 
 ├── configs                    # Hydra config files for dataset, model, and training hyperparameters
 ├── data                       # Raw data
-├── experiments                # Output directory for the Hugging Face Trainer
+├── experiments                # Output directory for the Hugging Face 
+├── infrastructure             # folder for terraform
+|   └── main.tf                # terraform script that use azurem to configure the ACI container
 ├── scripts
+|   ├── convert_to_onnx.py     # Convert HF Model to onnx (optimize for production)
 |   ├── prepare_data.py        # Split raw data into train and test
 |   └── upload_dataset.py      # Upload to the Hugging Face Hub
 ├── src
-│   ├── __init__.py
-│   ├── app
-│   │   ├── __init__.py
-│   │   ├── api.py             # FastAPI 
-│   │   ├── config.py          # Settings
-|   |   ├── start.sh           # Script to start the app
-│   │   ├── ui.py              # Gradio Interface  
-│   │   └── utils.py           
+│   ├── __init__.py          
 │   └── cyprus_fish
 │       ├── __init__.py
 │       ├── data.py            # Data Loader
@@ -77,7 +85,6 @@ This repository contains the complete pipeline: from data preparation and model 
 ├── .dockerignore              
 ├── .gitignore
 ├── .pre-commit-config.yaml    # Git hooks          
-├── Dockerfile                 
 ├── README.md                 
 ├── poetry.lock                
 └── pyproject.toml
@@ -154,10 +161,39 @@ poetry run pre-commit install --hook-type pre-push
 chmod +x .git/hooks/pre-push
 ```
 
-Enable the start.sh file for the launch of the application
-```bash
-chmod +x .src/app/start.sh
+Install Azure CLI
 ```
+curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+```
+
+Install Terraform
+```
+# 1. Installe les prérequis pour gérer les clés de sécurité
+sudo apt-get update && sudo apt-get install -y gnupg software-properties-common
+
+# 2. Ajoute la clé GPG officielle de HashiCorp
+wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg > /dev/null
+
+# 3. Ajoute le dépôt HashiCorp à tes sources d'applications
+echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+
+# 4. Mets à jour et installe Terraform
+sudo apt-get update && sudo apt-get install -y terraform
+
+```
+
+Configure Terraform and build the ACI (Azure Container Instance)
+```
+cd infrastructure
+terraform init
+terraform plan
+terraform apply 
+
+```
+
+Note there is one API_SECRET_TOKEN that is a secret stored in the Hugging Face Space and in the ACI to check if the user has the right to request the API.
+There is also a HF_TOKEN stored as github secrets to allow the repo to push the gradio interface on the HF space.
 
 ## 🛠️ Data Preparation, 🧠 Model Training & 💻 Application
 
@@ -205,7 +241,12 @@ The script evaluates the model on the test set and compares it against the curre
 You can change the model used in the application config in src/app/configs. <br>
 To start the server, run:
 ```bash
-./src/app/start.sh
+poetry run run-back
+```
+
+To start the gradio interface, run:
+```bash
+poetry run run-front
 ```
 
 ## To Do
