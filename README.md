@@ -10,9 +10,6 @@
 ![GitHub Actions](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white)
 ![Hugging Face Spaces](https://img.shields.io/badge/Hugging%20Face%20Spaces-FDBA21?style=for-the-badge&logo=huggingface&logoColor=black)
 
-```diff
-- This branch was used to learn how to deploy on Azure using Terraform and Docker. The server does not run anymore, the public version on  [Hugging Face Space](https://huggingface.co/spaces/JayRay5/Cyprus-Fish-Recognition-App) is the version on the main branch with a full-stack container app.
-```
 An end-to-end MLOps project for classifying fish species from Cyprus using Deep Learning. <br>
 This project covers 5 species:
 <div align="center">
