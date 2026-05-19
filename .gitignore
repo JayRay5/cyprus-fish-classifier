@@ -7,6 +7,12 @@ __pycache__/
 .env
 .venv/
 
+#terraform
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+.terraform.tfstate.lock.info
+
 #hydra
 outputs/
 
