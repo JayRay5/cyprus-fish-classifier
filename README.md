@@ -3,7 +3,9 @@
 [![Hugging Face Space](https://img.shields.io/badge/🤗%20Hugging%20Face-Space-yellow)](https://huggingface.co/spaces/JayRay5/Cyprus-Fish-Recognition-App)
 [![Docker Image](https://img.shields.io/badge/docker-ghcr.io-blue)](https://github.com/JayRay5/cyprus-fish-classifier/pkgs/container/cyprus-fish-classifier)
 
-This branch was used to learn how to deploy on Azure using Terraform and Docker. The server does not run anymore, the public version on  [Hugging Face Space](https://img.shields.io/badge/🤗%20Hugging%20Face-Space-yellow)](https://huggingface.co/spaces/JayRay5/Cyprus-Fish-Recognition-App) is the version on the main branch with a full-stack container app that. 
+```diff
+- This branch was used to learn how to deploy on Azure using Terraform and Docker. The server does not run anymore, the public version on  [Hugging Face Space](https://huggingface.co/spaces/JayRay5/Cyprus-Fish-Recognition-App) is the version on the main branch with a full-stack container app.
+```
 An end-to-end MLOps project for classifying fish species from Cyprus using Deep Learning. <br>
 This project covers 5 species:
 <div align="center">
