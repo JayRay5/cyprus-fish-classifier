@@ -48,9 +48,13 @@ This project covers 5 species:
   </table>
 </div>
 
-This repository contains the complete pipeline: from data preparation and model training to containerized deployment on Hugging Face Spaces.
+> [!WARNING]
+> **Architecture Proof of Concept**
+> 
+> This branch demonstrates an end-to-end MLOps pipeline encompassing data preparation, model training, quantization, and a decoupled cloud deployment. The architecture features a containerized FastAPI backend provisioned on Azure via Terraform, alongside an interactive Gradio frontend hosted on Hugging Face Spaces.
+> 
+> *Note: To follow cloud cost optimization best practices, the Azure infrastructure for this specific architecture has been destroyed. For the permanently active version of the application, please visit the `main` branch and the associated [Hugging Face Space](https://huggingface.co/spaces/JayRay5/Cyprus-Fish-Recognition-App).*
 
-**[👉 Live Demo on Hugging Face Spaces](https://huggingface.co/spaces/JayRay5/Cyprus-Fish-Recognition-App)**
 
 ---
 
