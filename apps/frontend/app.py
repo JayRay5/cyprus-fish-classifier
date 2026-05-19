@@ -14,9 +14,9 @@ def predict_from_api(image_filepath):
         return "Please provide an image."
 
     endpoint = f"{settings.api_url}/recognize"
-
+    print(settings.api_url)
     headers = {settings.api_key_name: API_SECRET_TOKEN}
-
+    print(API_SECRET_TOKEN)
     try:
         with open(image_filepath, "rb") as f:
             file = {"file": (os.path.basename(image_filepath), f, "image/jpeg")}
