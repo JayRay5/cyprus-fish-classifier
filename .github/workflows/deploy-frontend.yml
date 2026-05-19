@@ -3,6 +3,8 @@ name: Deploy Frontend to Hugging Face Spaces
 on:
   push:
     branches: [ azure_migration ]
+    paths:
+      - 'apps/frontend/**'
     
   workflow_dispatch:
 
