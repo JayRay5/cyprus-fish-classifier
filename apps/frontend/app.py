@@ -110,7 +110,7 @@ else:
 # --- THEME ---
 theme = gr.themes.Soft(primary_hue="blue", secondary_hue="sky", radius_size="md")
 
-with gr.Blocks(theme=theme, title="Cyprus Fish AI") as demo:
+with gr.Blocks(title="Cyprus Fish AI") as demo:
     gr.HTML(banner_html)
 
     with gr.Row():
@@ -153,7 +153,7 @@ with gr.Blocks(theme=theme, title="Cyprus Fish AI") as demo:
 
 
 def start():
-    demo.launch(server_name="0.0.0.0", server_port=7860)
+    demo.launch(theme=theme, ssr_mode=False)
 
 
 if __name__ == "__main__":
