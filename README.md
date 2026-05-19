@@ -195,7 +195,7 @@ terraform apply
 ```
 
 Note there is one API_SECRET_TOKEN that is a secret stored in the Hugging Face Space and in the ACI to check if the user has the right to request the API.
-There is also a HF_TOKEN stored as github secrets to allow the repo to push the gradio interface on the HF space.
+There is also a HF_TOKEN stored as github secrets to allow the repo to push the gradio interface on the HF space during CD/CD pipeline.
 
 ## 🛠️ Data Preparation, 🧠 Model Training & 💻 Application
 
@@ -240,7 +240,7 @@ The script evaluates the model on the test set and compares it against the curre
 3. Deployed by restarting the Hugging Face Space.
 
 ### 3. Application 
-You can change the model used in the application config in src/app/configs. <br>
+You can change the model used in the application config in apps/backend/configs. <br>
 To start the server, run:
 ```bash
 poetry run run-back
