@@ -5,8 +5,10 @@ class Settings(BaseSettings):
     # default hf repo id for the model if not specified in .env
     huggingface_repo_id: str = "JayRay5/convnext-tiny-224-cyprus-fish-cls"
     github_repo_id: str = "JayRay5/reconnaissance_poisson_chypre.git"
-    image_samples_path: str = "./src/app/assets/samples"
-    allowed_cors_origins: str = "http://localhost:7860"
+    image_samples_path: str = "./apps/frontend/assets/samples"
+    allowed_cors_origins: str = "*"
+    api_key_name: str = "X-API-Key"
+    api_secret_token: str = ""
 
     class Config:
         env_file = ".env"

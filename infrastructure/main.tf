@@ -5,6 +5,13 @@ terraform {
       version = "~> 3.0"
     }
   }
+
+  backend "azurerm" {
+    resource_group_name  = "rg-terraform-meta"
+    storage_account_name = "sttfstatejayray5cyprus"
+    container_name       = "tfstate"
+    key                  = "cyprus-fish-api.tfstate"
+  }
 }
 
 provider "azurerm" {
@@ -41,6 +48,7 @@ resource "azurerm_container_group" "aci" {
     environment_variables = {
       "WEBSITES_PORT"        = "8000"
       "ALLOWED_CORS_ORIGINS" = "*" 
+      "API_SECRET_TOKEN"     = var.api_secret_token 
     }
   }
 }
@@ -49,4 +57,9 @@ resource "azurerm_container_group" "aci" {
 output "api_url" {
   value       = "http://${azurerm_container_group.aci.fqdn}:8000"
   description = "Public URL for the open source project jayray5/cyprus-fish-recognition"
+}
+variable "api_secret_token" {
+  type        = string
+  description = "Secret token to restrict users that request the API."
+  sensitive   = true
 }

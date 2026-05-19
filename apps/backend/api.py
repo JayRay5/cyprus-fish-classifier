@@ -3,11 +3,12 @@ import os
 import uvicorn
 import asyncio
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, UploadFile, File, HTTPException
+
+from fastapi import FastAPI, UploadFile, File, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import APIKeyHeader
 from fastapi.concurrency import run_in_threadpool
 
-# Nouveaux imports pour ONNX
 from transformers import AutoImageProcessor
 from optimum.onnxruntime import ORTModelForImageClassification
 from PIL import Image
@@ -17,6 +18,9 @@ from .utils import predict_image
 
 constants = {}
 model_lock = asyncio.Lock()  # mutex for the model use (1 at a time)
+# To check required token to allow the request
+api_key_header = APIKeyHeader(name=settings.api_key_name, auto_error=False)
+API_SECRET_TOKEN = settings.api_secret_token.strip()
 
 
 @asynccontextmanager
@@ -56,7 +60,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.allowed_cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -78,7 +82,13 @@ def model_device_check():
     return {"status": "ready", "device": "ONNX Runtime (CPU)"}
 
 
-@app.post("/recognize")
+def verify_api_key(api_key: str = Depends(api_key_header)):
+    if api_key == API_SECRET_TOKEN:
+        return api_key
+    raise HTTPException(status_code=403, detail="Access denied.")
+
+
+@app.post("/recognize", dependencies=[Depends(verify_api_key)])
 async def recognize(file: UploadFile = File(...)):
     if "model" not in constants or "processor" not in constants:
         raise HTTPException(status_code=503, detail="Model or Processor not found.")

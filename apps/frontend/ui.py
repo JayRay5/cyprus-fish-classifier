@@ -1,15 +1,9 @@
 import os
 import gradio as gr
 import requests
+from config import settings
 
-# The Azure API URL will be injected via Hugging Face Secrets
-# For local testing, you can use "http://127.0.0.1:8000"
-API_URL = os.environ.get("API_URL", "http://127.0.0.1:8000")
-github_repo_url = "https://github.com/JayRay5/cyprus-fish-classifier/tree/main"
-huggingface_repo_url = (
-    "https://huggingface.co/JayRay5/convnext-tiny-224-cyprus-fish-cls"
-)
-samples_path = os.environ.get("UI_SAMPLE_PATH", "./assets/samples")
+API_SECRET_TOKEN = settings.api_secret_token.strip()
 
 
 def predict_from_api(image_filepath):
@@ -19,13 +13,15 @@ def predict_from_api(image_filepath):
     if image_filepath is None:
         return "Please provide an image."
 
-    endpoint = f"{API_URL}/recognize"
+    endpoint = f"{settings.api_url}/recognize"
+
+    headers = {settings.api_key_name: API_SECRET_TOKEN}
 
     try:
         with open(image_filepath, "rb") as f:
             file = {"file": (os.path.basename(image_filepath), f, "image/jpeg")}
 
-            response = requests.post(endpoint, files=file, timeout=30)
+            response = requests.post(endpoint, files=file, headers=headers, timeout=30)
 
         response.raise_for_status()
         results = response.json()
@@ -37,6 +33,8 @@ def predict_from_api(image_filepath):
     except requests.exceptions.Timeout:
         return "Error: Request timed out."
     except requests.exceptions.HTTPError as err:
+        if err.response.status_code == 403:
+            return "API Error: Access Denied. Please verify the API_SECRET_TOKEN."
         return f"API Error: {err}"
     except Exception as e:
         return f"Unexpected error: {e}"
@@ -58,7 +56,7 @@ banner_html = f"""
         </p>
         <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
             
-            <a href="{github_repo_url}" target="_blank" style="
+            <a href="{settings.github_repo_url}" target="_blank" style="
                 background-color: white;
                 color: #333;
                 padding: 8px 16px;
@@ -76,7 +74,7 @@ banner_html = f"""
                 Source Code
             </a>
 
-            <a href="{huggingface_repo_url}" target="_blank" style="
+            <a href="{settings.huggingface_repo_url}" target="_blank" style="
                 background-color: #FFD21E; 
                 color: #000;
                 padding: 8px 16px;
@@ -96,18 +94,17 @@ banner_html = f"""
     </div>
     """
 
-# Safely load examples to prevent crashes if the folder is missing
 valid_examples = []
-if os.path.exists(samples_path):
+if os.path.exists(settings.ui_sample_path):
     valid_examples = [
-        os.path.join(samples_path, ex)
-        for ex in os.listdir(samples_path)
+        os.path.join(settings.ui_sample_path, ex)
+        for ex in os.listdir(settings.ui_sample_path)
         if ex.lower().endswith(
             (".png", ".jpg", ".jpeg", ".webp")
         )  # Filter out hidden files (.DS_Store, etc.)
     ]
 else:
-    print(f"⚠️ The folder {samples_path} does not exist.")
+    print(f"⚠️ The folder {settings.ui_sample_path} does not exist.")
 
 
 # --- THEME ---
