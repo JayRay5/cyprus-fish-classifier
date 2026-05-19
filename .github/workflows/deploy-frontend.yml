@@ -23,7 +23,7 @@ jobs:
           cd apps/frontend
           
           # 2. Initialize an ephemeral Git sub-repository in this folder
-          git init
+          git init -b main # 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           
