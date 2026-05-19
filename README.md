@@ -1,7 +1,14 @@
 # 🐠 Cyprus Fish Species Recognition
 
-[![Hugging Face Space](https://img.shields.io/badge/🤗%20Hugging%20Face-Space-yellow)](https://huggingface.co/spaces/JayRay5/Cyprus-Fish-Recognition-App)
-[![Docker Image](https://img.shields.io/badge/docker-ghcr.io-blue)](https://github.com/JayRay5/cyprus-fish-classifier/pkgs/container/cyprus-fish-classifier)
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?style=for-the-badge&logo=PyTorch&logoColor=white)
+![ONNX](https://img.shields.io/badge/ONNX-005CED?style=for-the-badge&logo=onnx&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+![Terraform](https://img.shields.io/badge/terraform-%235835CC.svg?style=for-the-badge&logo=terraform&logoColor=white)
+![Microsoft Azure](https://img.shields.io/badge/microsoft%20azure-%230072C6.svg?style=for-the-badge&logo=microsoftazure&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white)
+![Hugging Face Space](https://img.shields.io/badge/🤗%20Hugging%20Face-Space-yellow)
 
 ```diff
 - This branch was used to learn how to deploy on Azure using Terraform and Docker. The server does not run anymore, the public version on  [Hugging Face Space](https://huggingface.co/spaces/JayRay5/Cyprus-Fish-Recognition-App) is the version on the main branch with a full-stack container app.
